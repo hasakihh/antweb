@@ -1,69 +1,89 @@
+import Image from "next/image";
+import { AntTrendChart } from "./ant-trend-chart";
 import { LoginForm } from "./login-form";
 
-function SignalField() {
+function AntMarker({ className }: { className: string }) {
   return (
-    <div className="signal-field" aria-hidden="true">
-      <svg
-        className="signal-canvas"
-        viewBox="0 0 1600 760"
-        preserveAspectRatio="none"
-      >
+    <svg
+      className={className}
+      viewBox="0 0 64 40"
+      role="img"
+      aria-label="一只沿轨道朝监测装置爬行的小火蚁"
+    >
+      <g fill="none" stroke="currentColor" strokeLinecap="round">
+        <path d="M23 17 13 9M24 21 10 21M23 25 13 33M39 16 50 8M40 20 54 20M39 24 51 32" />
+        <path d="M49 16c6-5 8-9 8-12M49 17c8-1 11-3 13-6" />
+      </g>
+      <ellipse cx="17" cy="21" rx="8" ry="6" fill="currentColor" />
+      <ellipse cx="31" cy="21" rx="6" ry="5" fill="currentColor" />
+      <ellipse cx="45" cy="21" rx="8" ry="7" fill="currentColor" />
+      <circle cx="49" cy="19" r="1.1" fill="var(--page-black)" />
+    </svg>
+  );
+}
+
+function TrackField() {
+  return (
+    <div className="track-field" aria-hidden="true">
+      <svg className="track-map" viewBox="0 0 1600 900" preserveAspectRatio="none">
         <defs>
-          <filter id="signal-blur" x="-20%" y="-80%" width="140%" height="260%">
-            <feGaussianBlur stdDeviation="18" />
-          </filter>
-          <filter id="node-blur" x="-200%" y="-200%" width="500%" height="500%">
-            <feGaussianBlur stdDeviation="8" />
+          <filter id="track-soften" x="-10%" y="-120%" width="120%" height="340%">
+            <feGaussianBlur stdDeviation="7" />
           </filter>
         </defs>
-
-        <g className="signal-grid">
-          <path d="M0 354H1600" />
-          <path d="M0 430H1600" />
-          <path d="M310 180V590" />
-          <path d="M520 180V590" />
-          <path d="M800 180V590" />
-          <path d="M1080 180V590" />
-          <path d="M1290 180V590" />
-        </g>
-
         <path
-          className="signal-haze"
-          filter="url(#signal-blur)"
-          d="M-120 494 C 150 478, 320 318, 558 360 S 890 432, 1114 360 S 1422 340, 1720 378"
+          className="track-haze"
+          filter="url(#track-soften)"
+          d="M-90 704 C 168 704, 265 615, 438 638 S 667 742, 825 691 S 1112 558, 1690 626"
         />
         <path
-          className="signal-track signal-track-secondary"
-          d="M-120 512 C 150 490, 318 340, 558 380 S 890 450, 1114 378 S 1422 354, 1720 394"
+          className="track-edge track-edge-top"
+          d="M-90 686 C 168 686, 265 597, 438 620 S 667 724, 825 673 S 1112 540, 1690 608"
         />
         <path
-          className="signal-track signal-track-primary"
-          d="M-120 494 C 150 478, 320 318, 558 360 S 890 432, 1114 360 S 1422 340, 1720 378"
+          className="track-edge"
+          d="M-90 722 C 168 722, 265 633, 438 656 S 667 760, 825 709 S 1112 576, 1690 644"
         />
         <path
-          className="signal-trace"
-          d="M-100 466 C 176 454, 328 296, 574 342 S 900 407, 1122 338 S 1410 321, 1700 356"
+          className="track-center"
+          d="M-90 704 C 168 704, 265 615, 438 638 S 667 742, 825 691 S 1112 558, 1690 626"
         />
-
-        <g className="signal-node node-one">
-          <circle className="node-glow" filter="url(#node-blur)" cx="558" cy="360" r="12" />
-          <circle className="node-ring" cx="558" cy="360" r="11" />
-          <circle className="node-core" cx="558" cy="360" r="3" />
-        </g>
-        <g className="signal-node node-two">
-          <circle className="node-glow" filter="url(#node-blur)" cx="1114" cy="360" r="12" />
-          <circle className="node-ring" cx="1114" cy="360" r="11" />
-          <circle className="node-core" cx="1114" cy="360" r="3" />
-        </g>
       </svg>
+
+      <AntMarker className="route-ant route-ant-one" />
+      <AntMarker className="route-ant route-ant-two" />
+      <AntMarker className="route-ant route-ant-three" />
+      <AntMarker className="route-ant route-ant-four" />
     </div>
+  );
+}
+
+function DeviceBlueprint() {
+  return (
+    <figure className="device-scene">
+      <div className="blueprint-frame">
+        <Image
+          className="blueprint-image"
+          src="/assets/monitoring-device-blueprint.png"
+          alt="太阳能小火蚁智能监测装置蓝图"
+          fill
+          sizes="(max-width: 760px) 74vw, (max-width: 1180px) 31vw, 36vw"
+          preload
+        />
+        <span className="blueprint-focus" aria-hidden="true" />
+      </div>
+      <figcaption>
+        <span>DEVICE BLUEPRINT / REV.A</span>
+        <strong>诱捕装置 03</strong>
+      </figcaption>
+    </figure>
   );
 }
 
 export default function Home() {
   return (
-    <main className="login-page">
-      <SignalField />
+    <main className="monitor-page">
+      <TrackField />
 
       <header className="site-header">
         <div className="brand-lockup" aria-label="小火蚁智能监测平台">
@@ -76,24 +96,33 @@ export default function Home() {
           </span>
         </div>
 
-        <div className="access-meta" aria-hidden="true">
-          <span>REMOTE MONITORING</span>
-          <span>SECURE ACCESS / 01</span>
+        <div className="system-state">
+          <span aria-hidden="true" />
+          监测网络在线
         </div>
       </header>
 
-      <section className="login-stage" aria-labelledby="page-title">
-        <div className="hero-copy">
-          <p className="hero-kicker">
-            <span />
-            入侵生物智能监测系统
-          </p>
-          <h1 id="page-title">小火蚁智能监测</h1>
-          <p className="hero-summary">让每一个诱捕点持续可见。</p>
+      <section className="monitor-content" aria-labelledby="page-title">
+        <div className="portal-column">
+          <div className="hero-copy">
+            <p className="hero-kicker">BIOSECURITY / SECURE ACCESS</p>
+            <h1 id="page-title">
+              <span>小火蚁</span>
+              <span>智能监测</span>
+            </h1>
+            <p className="hero-summary">连接每一个诱捕点，读取现场变化。</p>
+          </div>
+          <LoginForm />
         </div>
 
-        <LoginForm />
+        <DeviceBlueprint />
+        <AntTrendChart />
       </section>
+
+      <aside className="field-note" aria-label="装置状态">
+        <span>OPTICAL NODE</span>
+        <strong>03 / READY</strong>
+      </aside>
 
       <footer className="site-footer">
         <span>MONITOR · ANALYZE · RESPOND</span>

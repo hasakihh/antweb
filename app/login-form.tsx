@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { ArrowRight, Eye, EyeOff, LoaderCircle, LockKeyhole } from "lucide-react";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +23,12 @@ export function LoginForm() {
     <div className="auth-panel">
       <div className="auth-heading">
         <div>
-          <p>SECURE ACCESS</p>
+          <p>SECURE ACCESS / 01</p>
           <h2>进入监测网络</h2>
         </div>
-        <span className="auth-indicator" aria-label="安全连接可用" />
+        <span className="auth-security" title="加密访问">
+          <LockKeyhole size={15} strokeWidth={1.7} aria-hidden="true" />
+        </span>
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
@@ -57,8 +60,9 @@ export function LoginForm() {
               type="button"
               onClick={() => setShowPassword((visible) => !visible)}
               aria-label={showPassword ? "隐藏密码" : "显示密码"}
+              title={showPassword ? "隐藏密码" : "显示密码"}
             >
-              {showPassword ? "隐藏" : "显示"}
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
           </span>
         </div>
@@ -73,7 +77,11 @@ export function LoginForm() {
 
         <button className="submit-button" type="submit" disabled={isSubmitting}>
           <span>{isSubmitting ? "正在验证" : "进入监测平台"}</span>
-          <span aria-hidden="true">→</span>
+          {isSubmitting ? (
+            <LoaderCircle className="submit-spinner" size={17} aria-hidden="true" />
+          ) : (
+            <ArrowRight size={17} aria-hidden="true" />
+          )}
         </button>
 
         <p className="form-status" role="status" aria-live="polite">
