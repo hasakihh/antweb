@@ -1,0 +1,395 @@
+.root {
+  --orbit-radius: 120px;
+  --orbit-node: 42px;
+  position: fixed;
+  z-index: 30;
+  top: 8px;
+  left: 6px;
+  width: 340px;
+  height: 288px;
+  color: var(--paper);
+  pointer-events: none;
+}
+
+.navigation,
+.orbitStage,
+.orbitList {
+  position: absolute;
+  inset: 0;
+}
+
+.orbitStage {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 180ms ease-out, transform 220ms ease-out,
+    visibility 0s linear;
+}
+
+.outerRing,
+.innerRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid var(--dashboard-nav-line, var(--line));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.autoRotating {
+  animation: orbit-spin 60s linear infinite;
+  transition: none;
+}
+
+.autoRotating .nodeLink {
+  animation: orbit-counter-spin 60s linear infinite;
+  transition: none;
+}
+
+.autoRotating:has(.nodeLink:hover),
+.autoRotating:has(.nodeLink:focus-visible),
+.autoRotating:has(.nodeLink:hover) .nodeLink,
+.autoRotating:has(.nodeLink:focus-visible) .nodeLink {
+  animation-play-state: paused;
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(var(--orbit-rotation));
+  }
+
+  to {
+    transform: rotate(calc(var(--orbit-rotation) + 360deg));
+  }
+}
+
+@keyframes orbit-counter-spin {
+  from {
+    transform: rotate(var(--orbit-counter-rotation));
+  }
+
+  to {
+    transform: rotate(calc(var(--orbit-counter-rotation) - 360deg));
+  }
+}
+
+.outerRing {
+  width: calc(var(--orbit-radius) * 2);
+  height: calc(var(--orbit-radius) * 2);
+}
+
+.outerRing::before,
+.outerRing::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: "";
+  background: var(--dashboard-nav-line, var(--line));
+  transform: translate(-50%, -50%);
+}
+
+.outerRing::before {
+  width: calc(var(--orbit-radius) * 2 + 34px);
+  height: 1px;
+}
+
+.outerRing::after {
+  width: 1px;
+  height: calc(var(--orbit-radius) * 2 + 34px);
+}
+
+.innerRing {
+  width: 66px;
+  height: 66px;
+  border-style: dashed;
+  opacity: 0.64;
+}
+
+.orbitList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  transform: rotate(var(--orbit-rotation));
+  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.orbitItem {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--orbit-node);
+  height: var(--orbit-node);
+  margin-top: calc(var(--orbit-node) / -2);
+  margin-left: calc(var(--orbit-node) / -2);
+  transform: rotate(var(--node-angle)) translateX(var(--orbit-radius))
+    rotate(var(--node-angle-negative));
+  pointer-events: none;
+}
+
+.nodeLink {
+  position: relative;
+  display: grid;
+  width: var(--orbit-node);
+  height: var(--orbit-node);
+  place-items: center;
+  color: var(--paper-soft);
+  text-decoration: none;
+  transform: rotate(var(--orbit-counter-rotation));
+  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: auto;
+}
+
+.nodeIcon {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: var(--orbit-node);
+  height: var(--orbit-node);
+  place-items: center;
+  color: var(--paper-soft);
+  background: var(--dashboard-background, var(--page-black));
+  border: 1px solid var(--dashboard-nav-line-strong, var(--line-strong));
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.025);
+  transition: color 160ms ease-out, background 160ms ease-out,
+    border-color 160ms ease-out, transform 160ms ease-out;
+}
+
+.nodeCopy {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
+  display: grid;
+  width: 76px;
+  gap: 2px;
+  color: var(--paper-soft);
+  text-align: center;
+  transform: translateX(-50%);
+  transition: color 160ms ease-out, opacity 160ms ease-out;
+}
+
+.nodeCopy strong {
+  font-size: 10px;
+  font-weight: 550;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.nodeCopy small {
+  overflow: hidden;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 5px;
+  color: var(--faint);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nodeLink:hover .nodeIcon,
+.nodeLink:focus-visible .nodeIcon {
+  color: var(--dashboard-background, var(--page-black));
+  background: var(--paper-soft);
+  border-color: var(--paper);
+  transform: scale(1.08);
+}
+
+.nodeLink:hover .nodeCopy,
+.nodeLink:focus-visible .nodeCopy {
+  color: var(--paper);
+}
+
+.nodeLink:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 6px;
+  border-radius: 50%;
+}
+
+.activeNode .nodeIcon {
+  color: var(--dashboard-background, var(--page-black));
+  background: var(--paper);
+  border-color: var(--paper);
+  box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.08);
+}
+
+.activeNode .nodeCopy,
+.activeNode .nodeCopy small {
+  color: var(--paper);
+}
+
+.desktopHub,
+.mobileToggle {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  width: 58px;
+  height: 58px;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  color: var(--paper);
+  background: rgba(8, 8, 8, 0.92);
+  border: 1px solid var(--dashboard-nav-line-strong, var(--line-strong));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.desktopHub {
+  display: grid;
+}
+
+.desktopHub::before {
+  position: absolute;
+  inset: -8px;
+  content: "";
+  border: 1px solid var(--dashboard-nav-line, var(--line));
+  border-radius: 50%;
+}
+
+.desktopHub span,
+.mobileToggle span {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 6px;
+  color: var(--muted);
+}
+
+.mobileToggle {
+  display: none;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.mobileToggle:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+  .root {
+    --orbit-radius: 61px;
+    --orbit-node: 38px;
+    top: 2px;
+    left: 0;
+    width: 220px;
+    height: 186px;
+  }
+
+  .mobileOpen {
+    background: transparent;
+    border: 0;
+    backdrop-filter: none;
+  }
+
+  .orbitStage {
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(0.74);
+    transition-delay: 0s, 0s, 220ms;
+  }
+
+  .mobileOpen .orbitStage {
+    visibility: visible;
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0s;
+  }
+
+  .outerRing::before {
+    width: calc(var(--orbit-radius) * 2 + 14px);
+  }
+
+  .outerRing::after {
+    height: calc(var(--orbit-radius) * 2 + 14px);
+  }
+
+  .innerRing {
+    width: 48px;
+    height: 48px;
+  }
+
+  .nodeCopy {
+    top: calc(100% + 4px);
+    width: 60px;
+  }
+
+  .nodeCopy strong {
+    font-size: 8px;
+  }
+
+  .nodeCopy small {
+    display: none;
+  }
+
+  .desktopHub {
+    display: none;
+  }
+
+  .mobileToggle {
+    display: grid;
+    width: 48px;
+    height: 48px;
+  }
+
+  .mobileOpen .mobileToggle {
+    background: var(--paper);
+    color: var(--dashboard-background, var(--page-black));
+  }
+
+  .mobileOpen .mobileToggle span {
+    color: var(--faint);
+  }
+}
+
+@media (min-width: 768px) and (max-height: 720px) {
+  .root {
+    --orbit-radius: 84px;
+    --orbit-node: 38px;
+    height: 252px;
+  }
+
+  .nodeCopy {
+    top: calc(100% + 5px);
+  }
+}
+
+@media (max-width: 767px) and (max-height: 700px) {
+  .root {
+    --orbit-radius: 50px;
+    --orbit-node: 34px;
+    height: 156px;
+  }
+
+  .nodeCopy {
+    width: 54px;
+  }
+
+  .nodeCopy strong {
+    font-size: 7px;
+  }
+
+  .mobileToggle {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .autoRotating,
+  .autoRotating .nodeLink {
+    animation: none;
+  }
+
+  .orbitList,
+  .nodeLink {
+    transition: none;
+  }
+
+  .orbitStage,
+  .nodeIcon,
+  .nodeCopy,
+  .root {
+    transition: none;
+  }
+}

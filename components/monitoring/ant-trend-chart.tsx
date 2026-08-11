@@ -53,14 +53,12 @@ export function AntTrendChart() {
       <div className="trend-heading">
         <div>
           <p>FIELD TREND / 10 DAYS</p>
-          <h2 id="trend-title">小火蚁数量趋势</h2>
+          <h2 id="trend-title">Trend-summary</h2>
         </div>
-        <span className="demo-label">演示数据</span>
       </div>
 
       <div className="trend-summary">
         <div className="current-count">
-          <span>当前样本</span>
           <strong>{activeSample.count}</strong>
           <small>只 / 日</small>
         </div>
