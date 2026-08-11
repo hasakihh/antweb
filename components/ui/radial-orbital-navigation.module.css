@@ -4,10 +4,11 @@
   position: fixed;
   z-index: 30;
   top: 8px;
-  left: 6px;
+  left: var(--dashboard-rail-center, 176px);
   width: 340px;
   height: 288px;
   color: var(--paper);
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
@@ -35,43 +36,6 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-}
-
-.autoRotating {
-  animation: orbit-spin 60s linear infinite;
-  transition: none;
-}
-
-.autoRotating .nodeLink {
-  animation: orbit-counter-spin 60s linear infinite;
-  transition: none;
-}
-
-.autoRotating:has(.nodeLink:hover),
-.autoRotating:has(.nodeLink:focus-visible),
-.autoRotating:has(.nodeLink:hover) .nodeLink,
-.autoRotating:has(.nodeLink:focus-visible) .nodeLink {
-  animation-play-state: paused;
-}
-
-@keyframes orbit-spin {
-  from {
-    transform: rotate(var(--orbit-rotation));
-  }
-
-  to {
-    transform: rotate(calc(var(--orbit-rotation) + 360deg));
-  }
-}
-
-@keyframes orbit-counter-spin {
-  from {
-    transform: rotate(var(--orbit-counter-rotation));
-  }
-
-  to {
-    transform: rotate(calc(var(--orbit-counter-rotation) - 360deg));
-  }
 }
 
 .outerRing {
@@ -110,8 +74,6 @@
   padding: 0;
   margin: 0;
   list-style: none;
-  transform: rotate(var(--orbit-rotation));
-  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
 
@@ -121,11 +83,11 @@
   left: 50%;
   width: var(--orbit-node);
   height: var(--orbit-node);
-  margin-top: calc(var(--orbit-node) / -2);
-  margin-left: calc(var(--orbit-node) / -2);
-  transform: rotate(var(--node-angle)) translateX(var(--orbit-radius))
-    rotate(var(--node-angle-negative));
   pointer-events: none;
+}
+
+.orbitReady .orbitItem {
+  transition: transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nodeLink {
@@ -136,8 +98,6 @@
   place-items: center;
   color: var(--paper-soft);
   text-decoration: none;
-  transform: rotate(var(--orbit-counter-rotation));
-  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: auto;
 }
 
@@ -180,8 +140,10 @@
 .nodeCopy small {
   overflow: hidden;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 5px;
-  color: var(--faint);
+  font-size: 7px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -251,7 +213,8 @@
 .desktopHub span,
 .mobileToggle span {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 6px;
+  font-size: 7px;
+  font-weight: 500;
   color: var(--muted);
 }
 
@@ -271,7 +234,7 @@
     --orbit-radius: 61px;
     --orbit-node: 38px;
     top: 2px;
-    left: 0;
+    left: var(--dashboard-rail-center, 110px);
     width: 220px;
     height: 186px;
   }
@@ -376,13 +339,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .autoRotating,
-  .autoRotating .nodeLink {
-    animation: none;
-  }
-
-  .orbitList,
-  .nodeLink {
+  .orbitItem {
     transition: none;
   }
 

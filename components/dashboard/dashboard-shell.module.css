@@ -2,6 +2,8 @@
   --dashboard-background: #080808;
   --dashboard-nav-line: rgba(255, 255, 255, 0.08);
   --dashboard-nav-line-strong: rgba(255, 255, 255, 0.24);
+  --dashboard-rail-center: 176px;
+  --dashboard-rail-width: 352px;
   position: relative;
   min-height: 100svh;
   overflow: hidden;
@@ -15,6 +17,47 @@
       rgba(255, 255, 255, 0) 72%
     ),
     linear-gradient(145deg, #080808 0%, #0d0d0d 52%, #090909 100%);
+}
+
+.shell::before,
+.shell::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.shell::before {
+  z-index: 0;
+  inset: 0 auto 0 0;
+  width: var(--dashboard-rail-width);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(20, 20, 20, 0.42) 0%,
+      rgba(13, 13, 13, 0.32) 48%,
+      rgba(8, 8, 8, 0.2) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018),
+      rgba(255, 255, 255, 0) 82%
+    );
+}
+
+.shell::after {
+  z-index: 1;
+  top: 4%;
+  bottom: 4%;
+  left: calc(var(--dashboard-rail-width) - 1px);
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 12%,
+    rgba(255, 255, 255, 0.13) 38%,
+    rgba(255, 255, 255, 0.09) 68%,
+    transparent 100%
+  );
 }
 
 .skipLink {
@@ -128,6 +171,11 @@
 }
 
 @media (max-width: 767px) {
+  .shell {
+    --dashboard-rail-center: 110px;
+    --dashboard-rail-width: 220px;
+  }
+
   .shellHeader {
     min-height: 70px;
     padding-right: 14px;

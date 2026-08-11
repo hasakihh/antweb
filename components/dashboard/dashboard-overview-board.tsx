@@ -551,7 +551,7 @@ export function DashboardOverviewBoard() {
               aria-label="返回Dashboard概览"
               onClick={closeDetail}
             >
-              <ArrowLeft size={16} strokeWidth={1.7} aria-hidden="true" />
+              <ArrowLeft size={14} strokeWidth={1.7} aria-hidden="true" />
             </button>
 
             <span className={classes.detailIcon} aria-hidden="true">

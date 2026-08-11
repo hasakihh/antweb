@@ -1,7 +1,13 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
+import type { CSSProperties, FocusEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { LucideIcon } from "lucide-react";
 import { Radar, X } from "lucide-react";
 import Link from "next/link";
@@ -28,23 +34,24 @@ interface RadialOrbitalNavigationProps {
 }
 
 type NodeStyle = CSSProperties & {
-  "--node-angle": string;
-  "--node-angle-negative": string;
+  transform: string;
 };
 
-type OrbitStyle = CSSProperties & {
-  "--orbit-rotation": string;
-  "--orbit-counter-rotation": string;
-};
+const AUTO_ROTATION_STEP = 0.3;
+const AUTO_ROTATION_INTERVAL_MS = 50;
+const AUTO_ROTATION_RESUME_MS = 1500;
 
 export function RadialOrbitalNavigation({
   items,
 }: RadialOrbitalNavigationProps) {
   const pathname = usePathname();
   const rootRef = useRef<HTMLDivElement>(null);
-  const orbitListRef = useRef<HTMLUListElement>(null);
+  const resumeTimerRef = useRef<number | null>(null);
   const [openAtPathname, setOpenAtPathname] = useState<string | null>(null);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
+  const [isInteractionPaused, setIsInteractionPaused] = useState(false);
+  const [orbitRadius, setOrbitRadius] = useState(120);
+  const [isOrbitReady, setIsOrbitReady] = useState(false);
   const isMobileOpen = openAtPathname === pathname;
   const activeIndex = Math.max(
     0,
@@ -59,43 +66,81 @@ export function RadialOrbitalNavigation({
   );
   const previousActiveIndexRef = useRef(activeIndex);
 
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const updateRadius = () => {
+      const nextRadius = Number.parseFloat(
+        window.getComputedStyle(root).getPropertyValue("--orbit-radius"),
+      );
+
+      if (Number.isFinite(nextRadius)) {
+        setOrbitRadius(nextRadius);
+      }
+    };
+
+    const observer = new ResizeObserver(updateRadius);
+    updateRadius();
+    observer.observe(root);
+    const readyFrame = window.requestAnimationFrame(() => setIsOrbitReady(true));
+
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(readyFrame);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !isAutoRotating ||
+      isInteractionPaused ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const rotationTimer = window.setInterval(() => {
+      setRotationAngle((angle) =>
+        Number(((angle + AUTO_ROTATION_STEP) % 360).toFixed(3)),
+      );
+    }, AUTO_ROTATION_INTERVAL_MS);
+
+    return () => window.clearInterval(rotationTimer);
+  }, [isAutoRotating, isInteractionPaused]);
+
+  const rotateToIndex = useCallback(
+    (index: number) => {
+      setIsAutoRotating(false);
+      setRotationAngle(-index * angleStep);
+
+      if (resumeTimerRef.current !== null) {
+        window.clearTimeout(resumeTimerRef.current);
+      }
+
+      resumeTimerRef.current = window.setTimeout(() => {
+        setIsAutoRotating(true);
+        resumeTimerRef.current = null;
+      }, AUTO_ROTATION_RESUME_MS);
+    },
+    [angleStep],
+  );
+
   useEffect(() => {
     const previousIndex = previousActiveIndexRef.current;
     if (previousIndex === activeIndex) return;
     previousActiveIndexRef.current = activeIndex;
+    rotateToIndex(activeIndex);
+  }, [activeIndex, rotateToIndex]);
 
-    const orbitList = orbitListRef.current;
-    if (!orbitList) return;
-
-    const computedTransform = window.getComputedStyle(orbitList).transform;
-    const matrix = new DOMMatrixReadOnly(computedTransform);
-    const renderedAngle =
-      (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
-    const baseTarget = -activeIndex * angleStep;
-    const nearestTarget =
-      baseTarget + Math.round((renderedAngle - baseTarget) / 360) * 360;
-
-    let snapFrame = 0;
-    let resumeTimer = 0;
-    const freezeFrame = window.requestAnimationFrame(() => {
-      setIsAutoRotating(false);
-      setRotationAngle(renderedAngle);
-
-      snapFrame = window.requestAnimationFrame(() => {
-        setRotationAngle(nearestTarget);
-      });
-
-      resumeTimer = window.setTimeout(() => {
-        setIsAutoRotating(true);
-      }, 1500);
-    });
-
-    return () => {
-      window.cancelAnimationFrame(freezeFrame);
-      window.cancelAnimationFrame(snapFrame);
-      window.clearTimeout(resumeTimer);
-    };
-  }, [activeIndex, angleStep, items.length]);
+  useEffect(
+    () => () => {
+      if (resumeTimerRef.current !== null) {
+        window.clearTimeout(resumeTimerRef.current);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!isMobileOpen) return;
@@ -124,35 +169,53 @@ export function RadialOrbitalNavigation({
     };
   }, [isMobileOpen]);
 
-  const orbitStyle = {
-    "--orbit-rotation": `${rotationAngle}deg`,
-    "--orbit-counter-rotation": `${-rotationAngle}deg`,
-  } as OrbitStyle;
+  function resumeAfterFocusLeaves(event: FocusEvent<HTMLElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsInteractionPaused(false);
+    }
+  }
+
+  function pauseForKeyboardFocus(event: FocusEvent<HTMLElement>) {
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.matches(":focus-visible")
+    ) {
+      setIsInteractionPaused(true);
+    }
+  }
 
   return (
     <div
       ref={rootRef}
       className={`${styles.root} ${isMobileOpen ? styles.mobileOpen : ""}`}
     >
-      <nav className={styles.navigation} aria-label="监测平台主导航">
+      <nav
+        className={styles.navigation}
+        aria-label="监测平台主导航"
+        onMouseEnter={() => setIsInteractionPaused(true)}
+        onMouseLeave={() => setIsInteractionPaused(false)}
+        onFocusCapture={pauseForKeyboardFocus}
+        onBlurCapture={resumeAfterFocusLeaves}
+      >
         <div className={styles.orbitStage} id="dashboard-orbit-navigation">
           <span className={styles.outerRing} aria-hidden="true" />
           <span className={styles.innerRing} aria-hidden="true" />
 
           <ul
-            ref={orbitListRef}
             className={`${styles.orbitList} ${
-              isAutoRotating ? styles.autoRotating : ""
+              isOrbitReady ? styles.orbitReady : ""
             }`}
-            style={orbitStyle}
           >
             {items.map((item, index) => {
-              const angle = angleStep * index - 90;
+              const angle = angleStep * index - 90 + rotationAngle;
+              const radian = (angle * Math.PI) / 180;
+              const x = Number((orbitRadius * Math.cos(radian)).toFixed(3));
+              const y = Number((orbitRadius * Math.sin(radian)).toFixed(3));
               const isActive = index === activeIndex;
               const Icon = item.icon;
               const nodeStyle = {
-                "--node-angle": `${angle}deg`,
-                "--node-angle-negative": `${-angle}deg`,
+                transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                zIndex: isActive ? 3 : 1,
               } as NodeStyle;
 
               return (
@@ -163,7 +226,10 @@ export function RadialOrbitalNavigation({
                     }`}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    onClick={() => setOpenAtPathname(null)}
+                    onClick={() => {
+                      rotateToIndex(index);
+                      setOpenAtPathname(null);
+                    }}
                   >
                     <span className={styles.nodeIcon} aria-hidden="true">
                       <Icon size={18} strokeWidth={1.7} />
