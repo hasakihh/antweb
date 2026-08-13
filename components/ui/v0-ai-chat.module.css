@@ -1,0 +1,767 @@
+.workbench {
+  --chat-surface: color-mix(in srgb, var(--card) 94%, var(--background));
+  --chat-surface-focus: color-mix(in srgb, var(--card) 98%, var(--background));
+  --chat-surface-soft: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --chat-line: color-mix(in srgb, var(--foreground) 14%, transparent);
+  --chat-control-text: color-mix(
+    in srgb,
+    var(--foreground) 72%,
+    var(--background)
+  );
+  --chat-control-text-strong: color-mix(
+    in srgb,
+    var(--foreground) 86%,
+    var(--background)
+  );
+  --chat-control-surface: color-mix(
+    in srgb,
+    var(--foreground) 5%,
+    transparent
+  );
+  --chat-control-surface-hover: color-mix(
+    in srgb,
+    var(--foreground) 9%,
+    transparent
+  );
+  --chat-control-border: color-mix(
+    in srgb,
+    var(--foreground) 14%,
+    transparent
+  );
+  --chat-control-border-hover: color-mix(
+    in srgb,
+    var(--foreground) 26%,
+    transparent
+  );
+  --chat-composer-shadow: 0 18px 48px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 3%, transparent);
+  display: grid;
+  height: calc(100svh - 74px);
+  min-height: 540px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  margin-top: -60px;
+  margin-bottom: -16px;
+  overflow: hidden;
+}
+
+:global(:root[data-theme="warm-light"]) .workbench {
+  --chat-surface: color-mix(in srgb, var(--card) 90%, var(--background));
+  --chat-surface-focus: var(--card);
+  --chat-composer-shadow: 0 14px 34px rgba(46, 46, 46, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.64);
+}
+
+.workbenchHeader {
+  display: flex;
+  min-height: 66px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 1px 2px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.workbenchHeader p {
+  margin: 0 0 7px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.workbenchHeader h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 420;
+  line-height: 1.15;
+  color: var(--foreground);
+}
+
+.headerActions,
+.onlineState,
+.composerTools,
+.ragToggle,
+.composerFooter {
+  display: flex;
+  align-items: center;
+}
+
+.headerActions {
+  gap: 12px;
+}
+
+.onlineState {
+  gap: 8px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  color: var(--muted-foreground);
+}
+
+.onlineState i {
+  width: 5px;
+  height: 5px;
+  background: #83b99a;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(131, 185, 154, 0.08);
+}
+
+.newConversationButton,
+.attachButton,
+.sendButton,
+.messageTools button {
+  display: grid;
+  padding: 0;
+  place-items: center;
+}
+
+.newConversationButton {
+  width: 36px;
+  height: 36px;
+  color: var(--paper-soft);
+  background: var(--chat-surface-soft);
+  border: 1px solid var(--chat-line);
+  border-radius: 50%;
+  transition: color 160ms ease-out, background 160ms ease-out,
+    border-color 160ms ease-out;
+}
+
+.newConversationButton:hover {
+  color: var(--paper);
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  border-color: var(--line-strong);
+}
+
+.conversation {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-color: color-mix(in srgb, var(--foreground) 15%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 100%;
+  align-content: center;
+  justify-items: center;
+  padding: 40px 20px 78px;
+  text-align: center;
+}
+
+.assistantMark {
+  position: relative;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 20px;
+  place-items: center;
+  color: var(--paper-soft);
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  border-radius: 50%;
+}
+
+.assistantMark::before {
+  position: absolute;
+  inset: 5px;
+  content: "";
+  border: 1px dashed var(--chat-line);
+  border-radius: 50%;
+}
+
+.emptyState h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 350;
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+.emptyState p {
+  margin: 12px 0 0;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  color: var(--chat-control-text);
+}
+
+.messageList {
+  display: grid;
+  max-width: 780px;
+  gap: 34px;
+  padding: 34px 8px 46px;
+  margin: 0 auto;
+  list-style: none;
+}
+
+.message {
+  display: block;
+  min-width: 0;
+}
+
+.userMessage {
+  width: fit-content;
+  max-width: 60%;
+  margin-left: auto;
+}
+
+.assistantMessage {
+  width: 100%;
+}
+
+.messageBody {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.userMessage .messageBody {
+  padding: 1px 12px 6px 12px;
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.messageMeta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+
+.messageMeta strong {
+  font-size: 11px;
+  font-weight: 550;
+  color: var(--paper-soft);
+}
+
+.messageMeta time {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  color: var(--faint);
+}
+
+.messageBody > p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: color-mix(in srgb, var(--foreground) 90%, transparent);
+}
+
+.messageAttachments,
+.attachments {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.messageAttachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.messageAttachments li {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 7px;
+  overflow: hidden;
+  color: var(--muted-foreground);
+  background: var(--chat-control-surface);
+  border-radius: 4px;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.messageTools {
+  display: flex;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.messageTools button {
+  width: 28px;
+  height: 28px;
+  color: var(--faint);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  transition: color 140ms ease-out, background 140ms ease-out;
+}
+
+.messageTools button:hover {
+  color: var(--paper-soft);
+  background: var(--chat-control-surface);
+}
+
+.thinking {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 5px;
+}
+
+.thinking span {
+  width: 4px;
+  height: 4px;
+  background: var(--muted-foreground);
+  border-radius: 50%;
+  animation: thinking-pulse 900ms ease-in-out infinite;
+}
+
+.thinking span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.thinking span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.composerArea {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 820px);
+  padding: 6px 8px 0;
+  margin: 0 auto;
+}
+
+.composer {
+  position: relative;
+  padding: 12px;
+  background: var(--chat-surface);
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  border-radius: 30px;
+  box-shadow: var(--chat-composer-shadow);
+  transition: border-color 160ms ease-out, background 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+
+.composer:focus-within {
+  background: var(--chat-surface-focus);
+  border-color: color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+
+.composerLabel {
+  display: block;
+  width: fit-content;
+  margin: 0 4px 4px;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--paper-soft);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 4px 5px;
+  color: var(--paper);
+  caret-color: var(--paper);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  font-family: var(--font-geist-sans), "Microsoft YaHei UI", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+  scrollbar-color: var(--chat-control-border) transparent;
+  scrollbar-width: thin;
+}
+
+.textarea:focus,
+.textarea:focus-visible {
+  outline: 0;
+}
+
+.textarea::placeholder {
+  color: var(--chat-control-text);
+  opacity: 1;
+}
+
+.attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 3px 6px;
+}
+
+.attachments li {
+  display: grid;
+  min-width: 0;
+  max-width: 210px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px 5px 8px;
+  color: var(--paper-soft);
+  background: var(--chat-control-surface);
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.attachments li > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachments button {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  place-items: center;
+  color: var(--chat-control-text);
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+}
+
+.attachments button:hover {
+  color: var(--paper);
+  background: var(--chat-control-surface-hover);
+}
+
+.composerFooter {
+  min-height: 36px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.composerTools {
+  min-width: 0;
+  gap: 7px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.attachButton,
+.sendButton {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 20px 20px ;
+  transition: color 150ms ease-out, background 150ms ease-out,
+    border-color 150ms ease-out;
+}
+
+.attachButton {
+  color: var(--chat-control-text-strong);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.attachButton:hover {
+  color: var(--paper);
+  background: var(--chat-control-surface-hover);
+  border-color: var(--chat-control-border);
+}
+
+.ragToggle {
+  height: 30px;
+  gap: 4px;
+  padding: 1px 7px 0 7px;
+  color: var(--chat-control-text-strong);
+  background: var(--chat-control-surface);
+  border: 1px dashed var(--chat-control-border);
+  border-radius: 10px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: color 150ms ease-out, background 150ms ease-out,
+    border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.ragToggle:hover {
+  color: var(--foreground);
+  background: var(--chat-control-surface-hover);
+  border-color: var(--chat-control-border-hover);
+}
+
+.ragToggleActive,
+.ragToggleActive:hover {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+  border-style: solid;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.sendButton {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.sendButton:hover:not(:disabled) {
+  color: var(--paper);
+  background: transparent;
+}
+
+.sendButton:disabled {
+  color: var(--chat-control-text);
+  background: var(--chat-control-surface);
+  border-color: var(--chat-control-border);
+  cursor: not-allowed;
+}
+
+.quickCommands {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 0 0;
+}
+
+.quickCommands button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  color: var(--chat-control-text-strong);
+  background: var(--chat-control-surface);
+  border: 1px solid var(--chat-control-border);
+  border-radius: 17px;
+  font-size: 9px;
+  white-space: nowrap;
+  transition: color 150ms ease-out, background 150ms ease-out,
+    border-color 150ms ease-out;
+}
+
+.quickCommands button:hover:not(:disabled) {
+  color: var(--paper);
+  background: var(--chat-control-surface-hover);
+  border-color: var(--chat-control-border-hover);
+}
+
+.quickCommands button:disabled {
+  cursor: wait;
+  opacity: 0.42;
+}
+
+.newConversationButton:focus-visible,
+.attachButton:focus-visible,
+.sendButton:focus-visible,
+.messageTools button:focus-visible,
+.attachments button:focus-visible,
+.quickCommands button:focus-visible,
+.ragToggle:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+@keyframes thinking-pulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 1120px) {
+  .quickCommands {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quickCommands button {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .workbench {
+    height: calc(100svh - 86px);
+    min-height: 520px;
+    margin-top: -24px;
+    margin-bottom: -20px;
+  }
+
+  .workbenchHeader {
+    min-height: 52px;
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+
+  .workbenchHeader p {
+    margin-bottom: 4px;
+    font-size: 8px;
+  }
+
+  .workbenchHeader h1 {
+    font-size: 15px;
+  }
+
+  .onlineState {
+    display: none;
+  }
+
+  .newConversationButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .emptyState {
+    padding-right: 2px;
+    padding-bottom: 64px;
+    padding-left: 2px;
+  }
+
+  .assistantMark {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 14px;
+  }
+
+  .emptyState h2 {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .emptyState p {
+    font-size: 8px;
+    line-height: 1.5;
+  }
+
+  .messageList {
+    gap: 24px;
+    padding: 24px 0 36px;
+  }
+
+  .userMessage {
+    width: fit-content;
+    max-width: 60%;
+  }
+
+  .userMessage .messageBody {
+    padding: 8px;
+  }
+
+  .messageMeta {
+    display: grid;
+    gap: 2px;
+  }
+
+  .messageMeta strong {
+    font-size: 9px;
+  }
+
+  .messageBody > p {
+    font-size: 10px;
+    line-height: 1.65;
+  }
+
+  .composerArea {
+    padding-top: 5px;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .composer {
+    padding: 7px;
+  }
+
+  .composerLabel {
+    font-size: 8px;
+  }
+
+  .textarea {
+    min-height: 56px;
+    padding: 6px 2px;
+    font-size: 10px;
+  }
+
+  .composerFooter {
+    gap: 5px;
+  }
+
+  .composerTools {
+    gap: 3px;
+  }
+
+  .attachButton,
+  .sendButton {
+    width: 30px;
+    height: 30px;
+  }
+
+  .ragToggle {
+    height: 30px;
+    gap: 3px;
+    padding: 0 5px;
+    font-size: 8px;
+  }
+
+  .quickCommands {
+    gap: 4px;
+    padding-top: 7px;
+  }
+
+  .quickCommands button {
+    min-height: 38px;
+    gap: 3px;
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 8px;
+    line-height: 1.3;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .quickCommands button svg {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-height: 680px) {
+  .workbench {
+    height: calc(100svh - 62px);
+    min-height: 470px;
+  }
+
+  .emptyState {
+    padding-bottom: 34px;
+  }
+
+  .assistantMark {
+    margin-bottom: 12px;
+  }
+
+  .emptyState h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 680px) {
+  .workbench {
+    height: calc(100svh - 78px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thinking span {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .composer,
+  .newConversationButton,
+  .attachButton,
+  .sendButton,
+  .ragToggle,
+  .messageTools button,
+  .quickCommands button {
+    transition: none;
+  }
+}

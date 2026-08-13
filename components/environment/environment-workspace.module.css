@@ -1,0 +1,780 @@
+.workspace {
+  --environment-radius: 16px;
+  --environment-copy: color-mix(
+    in srgb,
+    var(--foreground) 70%,
+    var(--background)
+  );
+  --environment-line: color-mix(in srgb, var(--foreground) 12%, transparent);
+  --environment-line-strong: color-mix(in srgb, var(--foreground) 20%, transparent);
+  --environment-surface: color-mix(in srgb, var(--card) 76%, transparent);
+  --environment-surface-soft: color-mix(in srgb, var(--foreground) 4%, transparent);
+  height: calc(100svh - 142px);
+  padding: 22px 4px 42px 2px;
+  overflow-y: auto;
+  scrollbar-color: var(--environment-line-strong) transparent;
+  scrollbar-width: thin;
+  text-rendering: auto;
+}
+
+.forecastSection,
+.observationSection {
+  min-width: 0;
+}
+
+.observationSection {
+  padding-top: 28px;
+  margin-top: 28px;
+  border-top: 1px solid var(--environment-line);
+}
+
+.sectionHeading {
+  display: flex;
+  min-height: 42px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.sectionHeading p,
+.sectionHeading h2 {
+  margin: 0;
+}
+
+.sectionHeading p {
+  margin-bottom: 5px;
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  font-weight: 550;
+}
+
+.sectionHeading h2 {
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 470;
+  line-height: 1.25;
+}
+
+.locationForm,
+.searchField {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  color: var(--muted-foreground);
+  background: var(--environment-surface-soft);
+  border: 1px solid var(--environment-line);
+  border-radius: var(--environment-radius);
+}
+
+.locationForm {
+  width: min(100%, 330px);
+  min-height: 38px;
+  padding-left: 11px;
+}
+
+.locationForm input,
+.searchField input {
+  min-width: 0;
+  color: var(--foreground);
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+.locationForm input {
+  width: 100%;
+  height: 36px;
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 450;
+}
+
+.locationForm button {
+  min-width: 58px;
+  height: 28px;
+  margin-right: 4px;
+  padding: 0 10px;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--environment-radius);
+  font-size: 11px;
+  font-weight: 520;
+}
+
+.locationForm button:hover:not(:disabled) {
+  color: var(--foreground);
+  background: transparent;
+}
+
+.locationForm button:disabled,
+.rangeControl button:disabled,
+.tableActions button:disabled {
+  cursor: wait;
+  opacity: 0.52;
+}
+
+.forecastToolbar {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rangeControl {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  background: var(--environment-surface-soft);
+  border: 1px solid var(--environment-line);
+  border-radius: var(--environment-radius);
+}
+
+.rangeControl button {
+  min-width: 48px;
+  height: 27px;
+  padding: 0 10px;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: 0;
+  border-radius: var(--environment-radius);
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.rangeControl button:hover:not(:disabled) {
+  color: var(--foreground);
+  background: var(--environment-surface-soft);
+}
+
+.rangeControl .activeRange {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.forecastMeta,
+.observationMeta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  color: var(--environment-copy);
+  font-family: var(--font-geist-sans), "Microsoft YaHei UI", "Microsoft YaHei",
+    "PingFang SC", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.forecastMeta span {
+  white-space: nowrap;
+}
+
+.forecastMeta span + span {
+  position: relative;
+  padding-left: 12px;
+}
+
+.forecastMeta span + span::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  content: "";
+  background: var(--muted-foreground);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.forecastMeta span[data-source="qweather"] {
+  color: var(--chart-3);
+}
+
+.inlineError,
+.errorText {
+  color: var(--destructive);
+}
+
+.inlineError {
+  margin: 2px 0 8px;
+  font-size: 10px;
+}
+
+.forecastScroller {
+  overflow-x: auto;
+  scrollbar-color: var(--environment-line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.forecastGrid {
+  display: grid;
+  min-width: max-content;
+  grid-auto-columns: 178px;
+  grid-auto-flow: column;
+  gap: 8px;
+  padding: 4px 0 8px;
+  opacity: 1;
+  transition: opacity 160ms ease;
+}
+
+.forecastGrid.loading {
+  opacity: 0.45;
+}
+
+.forecastDay {
+  display: grid;
+  min-height: 196px;
+  grid-template-rows: auto auto 1fr;
+  gap: 13px;
+  padding: 14px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card) 88%, transparent),
+    color-mix(in srgb, var(--background) 88%, transparent)
+  );
+  border: 1px solid var(--environment-line);
+  border-radius: var(--environment-radius);
+  box-shadow: inset 0 1px color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+.forecastDay header,
+.weatherCondition {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.forecastDay header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.forecastDay header strong {
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.forecastDay header span {
+  color: var(--environment-copy);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.forecastDay header svg {
+  color: var(--chart-2);
+}
+
+.weatherCondition {
+  align-items: end;
+}
+
+.weatherCondition strong {
+  color: var(--foreground);
+  font-size: 28px;
+  font-weight: 360;
+  line-height: 1;
+}
+
+.weatherCondition strong small {
+  margin-left: 5px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.weatherCondition > span {
+  padding-bottom: 2px;
+  color: var(--environment-copy);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.weatherDetails {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 12px;
+  padding-top: 11px;
+  margin: 0;
+  border-top: 1px solid var(--environment-line);
+}
+
+.weatherDetails > div {
+  min-width: 0;
+}
+
+.weatherDetails dt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--environment-copy);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.weatherDetails dd {
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), "Microsoft YaHei UI", "Microsoft YaHei",
+    "PingFang SC", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tableActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.searchField {
+  width: 174px;
+  height: 34px;
+  padding: 0 9px;
+}
+
+.searchField input {
+  width: 100%;
+  height: 32px;
+  padding-left: 7px;
+  font-size: 11px;
+  font-weight: 450;
+}
+
+.searchField input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+.iconButton,
+.exportButton {
+  display: inline-flex;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary-foreground);
+  background: var(--environment-surface-soft);
+  border: 1px solid var(--environment-line);
+  border-radius: var(--environment-radius);
+}
+
+.iconButton {
+  width: 34px;
+  padding: 0;
+}
+
+.exportButton {
+  gap: 6px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.iconButton:hover:not(:disabled),
+.exportButton:hover:not(:disabled) {
+  color: var(--foreground);
+  border-color: var(--environment-line-strong);
+}
+
+.observationMeta {
+  min-height: 36px;
+  gap: 16px;
+}
+
+.observationMeta > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.observationMeta span[data-state="online"] {
+  width: 5px;
+  height: 5px;
+  background: var(--chart-3);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--chart-3) 12%, transparent);
+}
+
+.tableFrame {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--background) 74%, transparent);
+  border: 1px solid var(--environment-line);
+  border-radius: var(--environment-radius);
+}
+
+.tableScroller {
+  overflow-x: auto;
+  scrollbar-color: var(--environment-line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.tableFrame table {
+  width: 100%;
+  min-width: 770px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tableFrame th,
+.tableFrame td {
+  height: 43px;
+  padding: 0 13px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--environment-line);
+}
+
+.tableFrame th {
+  color: var(--environment-copy);
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  font-size: 11px;
+  font-weight: 560;
+  white-space: nowrap;
+}
+
+.tableFrame th button {
+  display: inline-flex;
+  width: 100%;
+  height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  text-align: left;
+}
+
+.tableFrame th button:hover {
+  color: var(--foreground);
+}
+
+.tableFrame td {
+  color: var(--environment-copy);
+  font-family: var(--font-geist-sans), "Microsoft YaHei UI", "Microsoft YaHei",
+    "PingFang SC", sans-serif;
+  font-size: 11px;
+  font-weight: 470;
+}
+
+.tableFrame td strong {
+  color: var(--foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-weight: 560;
+}
+
+.tableFrame td time,
+.valueCell {
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.tableFrame tbody tr {
+  transition: background 150ms ease;
+}
+
+.tableFrame tbody tr:hover,
+.tableFrame tbody tr[data-selected="true"] {
+  background: var(--environment-surface-soft);
+}
+
+.tableFrame tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tableFrame .checkboxColumn {
+  width: 42px;
+  padding-right: 8px;
+  padding-left: 12px;
+  text-align: center;
+}
+
+.tableFrame .indexColumn {
+  width: 54px;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.tableFrame th:nth-child(3) {
+  width: 126px;
+}
+
+.tableFrame th:nth-child(4),
+.tableFrame th:nth-child(5),
+.tableFrame th:nth-child(6) {
+  width: 128px;
+}
+
+.tableFrame th:nth-child(7) {
+  width: 164px;
+}
+
+.tableFrame input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.valueCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.valueCell[data-metric="temperature"] svg {
+  color: var(--chart-2);
+}
+
+.valueCell[data-metric="humidity"] svg {
+  color: var(--chart-3);
+}
+
+.emptyRows {
+  display: grid;
+  min-height: 84px;
+  place-items: center;
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.spinning {
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .forecastMeta span:nth-child(2) {
+    display: none;
+  }
+
+  .forecastGrid {
+    grid-auto-columns: 162px;
+  }
+
+  .tableActions {
+    gap: 4px;
+  }
+
+  .searchField {
+    width: 140px;
+  }
+}
+
+@media (max-width: 767px) {
+  .workspace {
+    height: calc(100svh - 126px);
+    padding-top: 14px;
+    padding-bottom: 28px;
+  }
+
+  .sectionHeading {
+    min-height: 34px;
+    gap: 8px;
+  }
+
+  .sectionHeading p {
+    margin-bottom: 3px;
+    font-size: 10px;
+  }
+
+  .sectionHeading h2 {
+    font-size: 10px;
+  }
+
+  .locationForm {
+    width: 190px;
+    min-height: 30px;
+    padding-left: 7px;
+  }
+
+  .locationForm input {
+    height: 28px;
+    padding: 0 5px;
+    font-size: 10px;
+  }
+
+  .locationForm button {
+    min-width: 42px;
+    height: 23px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .forecastToolbar {
+    min-height: 38px;
+  }
+
+  .rangeControl button {
+    min-width: 35px;
+    height: 23px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .forecastMeta {
+    gap: 6px;
+    font-size: 10px;
+  }
+
+  .forecastMeta span + span {
+    padding-left: 6px;
+  }
+
+  .forecastGrid {
+    grid-auto-columns: 134px;
+    gap: 5px;
+  }
+
+  .forecastDay {
+    min-height: 158px;
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .forecastDay header strong {
+    font-size: 10px;
+  }
+
+  .forecastDay header span,
+  .weatherDetails dt {
+    font-size: 10px;
+  }
+
+  .forecastDay header svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .weatherCondition strong {
+    font-size: 21px;
+  }
+
+  .weatherCondition strong small {
+    font-size: 10px;
+  }
+
+  .weatherCondition > span,
+  .weatherDetails dd {
+    font-size: 10px;
+  }
+
+  .weatherDetails {
+    gap: 6px;
+    padding-top: 8px;
+  }
+
+  .observationSection {
+    padding-top: 18px;
+    margin-top: 18px;
+  }
+
+  .searchField {
+    width: 96px;
+    height: 28px;
+  }
+
+  .searchField input {
+    height: 26px;
+    font-size: 10px;
+  }
+
+  .iconButton,
+  .exportButton {
+    height: 28px;
+  }
+
+  .iconButton {
+    width: 28px;
+  }
+
+  .exportButton {
+    gap: 3px;
+    padding: 0 7px;
+    font-size: 10px;
+  }
+
+  .observationMeta {
+    min-height: 30px;
+    gap: 8px;
+    font-size: 10px;
+  }
+
+  .tableFrame table {
+    min-width: 620px;
+  }
+
+  .tableFrame th,
+  .tableFrame td {
+    height: 36px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+
+  .tableFrame th button {
+    height: 35px;
+  }
+
+  .tableFrame .checkboxColumn {
+    width: 34px;
+    padding-right: 5px;
+    padding-left: 8px;
+  }
+
+  .tableFrame .indexColumn {
+    width: 42px;
+  }
+
+  .tableFrame th:nth-child(3) {
+    width: 100px;
+  }
+
+  .tableFrame th:nth-child(4),
+  .tableFrame th:nth-child(5),
+  .tableFrame th:nth-child(6) {
+    width: 100px;
+  }
+
+  .tableFrame th:nth-child(7) {
+    width: 136px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forecastGrid,
+  .rangeControl button,
+  .tableFrame tbody tr {
+    transition: none;
+  }
+
+  .spinning {
+    animation: none;
+  }
+}

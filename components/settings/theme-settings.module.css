@@ -1,0 +1,318 @@
+.section {
+  width: min(100%, 760px);
+  padding-top: 34px;
+}
+
+.heading {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+
+.heading p,
+.heading h2 {
+  margin: 0;
+}
+
+.heading p {
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.heading h2 {
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 480;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.option {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px var(--shadow-blur) rgba(0, 0, 0, var(--shadow-opacity));
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.option:hover {
+  border-color: var(--ring);
+  transform: translateY(-1px);
+}
+
+.option[data-active="true"] {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring),
+    0 var(--shadow-offset-y) var(--shadow-blur)
+      rgba(0, 0, 0, var(--shadow-opacity));
+}
+
+.option:has(.radio:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.preview {
+  --preview-background: #080808;
+  --preview-foreground: #f2f2ed;
+  --preview-card: #151515;
+  --preview-line: rgba(255, 255, 255, 0.18);
+  position: relative;
+  display: block;
+  height: 94px;
+  overflow: hidden;
+  background: var(--preview-background);
+  border-bottom: 1px solid var(--preview-line);
+}
+
+.option[data-theme-preview="warm-light"] .preview {
+  --preview-background: #e9e4d8;
+  --preview-foreground: #1e1e1e;
+  --preview-card: #f4efe4;
+  --preview-line: #d2cbbb;
+}
+
+.option[data-theme-preview="warm-dark"] .preview {
+  --preview-background: #141414;
+  --preview-foreground: #e8e3da;
+  --preview-card: #1c1c1c;
+  --preview-line: #2c2c2c;
+}
+
+.previewRail,
+.previewOrbit,
+.previewCard,
+.previewLine {
+  position: absolute;
+  display: block;
+}
+
+.previewRail {
+  inset: 0 auto 0 0;
+  width: 34%;
+  background: color-mix(in srgb, var(--preview-card) 76%, transparent);
+  border-right: 1px solid var(--preview-line);
+}
+
+.previewOrbit {
+  top: 17px;
+  left: 11%;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--preview-line);
+  border-radius: 50%;
+}
+
+.previewOrbit::before,
+.previewOrbit::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: "";
+  background: var(--preview-foreground);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.previewOrbit::before {
+  width: 12px;
+  height: 12px;
+}
+
+.previewOrbit::after {
+  width: 4px;
+  height: 4px;
+  box-shadow: -19px 0 var(--preview-foreground),
+    19px 0 var(--preview-foreground), 0 -19px var(--preview-foreground),
+    0 19px var(--preview-foreground);
+}
+
+.previewCard {
+  top: 20px;
+  right: 12px;
+  width: 50%;
+  height: 52px;
+  background: var(--preview-card);
+  border: 1px solid var(--preview-line);
+  border-radius: 4px;
+}
+
+.previewLine {
+  top: 36px;
+  right: 23px;
+  width: 31%;
+  height: 1px;
+  background: var(--preview-foreground);
+  box-shadow: 0 11px color-mix(in srgb, var(--preview-foreground) 35%, transparent),
+    0 22px color-mix(in srgb, var(--preview-foreground) 18%, transparent);
+}
+
+.optionCopy {
+  display: grid;
+  gap: 8px;
+  min-height: 72px;
+  padding: 12px;
+}
+
+.optionCopy > span {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.optionCopy strong {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 520;
+}
+
+.optionCopy small,
+.optionCopy em {
+  color: var(--muted-foreground);
+  font-style: normal;
+  font-weight: 450;
+}
+
+.optionCopy small {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 6px;
+}
+
+.optionCopy em {
+  font-size: 9px;
+}
+
+.selectedMark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.78);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.option[data-active="true"] .selectedMark {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.radio,
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding-top: 18px;
+  }
+
+  .heading {
+    margin-bottom: 10px;
+  }
+
+  .heading h2 {
+    font-size: 11px;
+  }
+
+  .preview {
+    height: 56px;
+  }
+
+  .previewOrbit {
+    top: 10px;
+    left: 9%;
+    width: 30px;
+    height: 30px;
+  }
+
+  .previewOrbit::after {
+    box-shadow: -15px 0 var(--preview-foreground),
+      15px 0 var(--preview-foreground), 0 -15px var(--preview-foreground),
+      0 15px var(--preview-foreground);
+  }
+
+  .previewCard {
+    top: 11px;
+    right: 7px;
+    height: 34px;
+  }
+
+  .previewLine {
+    top: 20px;
+    right: 12px;
+    box-shadow: 0 8px color-mix(in srgb, var(--preview-foreground) 35%, transparent),
+      0 16px color-mix(in srgb, var(--preview-foreground) 18%, transparent);
+  }
+
+  .optionCopy {
+    gap: 5px;
+    min-height: 58px;
+    padding: 9px;
+  }
+
+  .optionCopy > span {
+    display: grid;
+    gap: 2px;
+  }
+
+  .optionCopy strong {
+    font-size: 9px;
+  }
+
+  .optionCopy em {
+    font-size: 7px;
+  }
+
+  .selectedMark {
+    top: 5px;
+    right: 5px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option,
+  .selectedMark {
+    transition: none;
+  }
+}

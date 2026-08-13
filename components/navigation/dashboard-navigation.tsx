@@ -2,8 +2,8 @@
 
 import {
   CloudSun,
-  LayoutDashboard,
   Map,
+  ScanSearch,
   Settings2,
   ShieldAlert,
 } from "lucide-react";
@@ -14,11 +14,11 @@ import {
 
 export const dashboardNavigationItems = [
   {
-    id: "overview",
-    label: "概览",
-    englishLabel: "Overview",
-    href: "/overview",
-    icon: LayoutDashboard,
+    id: "monitoring",
+    label: "监测",
+    englishLabel: "Monitoring",
+    href: "/monitoring",
+    icon: ScanSearch,
   },
   {
     id: "environment",

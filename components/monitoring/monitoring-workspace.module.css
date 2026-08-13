@@ -1,0 +1,1185 @@
+.workspace {
+  --monitor-radius: 16px;
+  --monitor-copy: color-mix(in srgb, var(--foreground) 70%, var(--background));
+  --monitor-line: color-mix(in srgb, var(--foreground) 11%, transparent);
+  --monitor-line-strong: color-mix(in srgb, var(--foreground) 21%, transparent);
+  --monitor-surface: color-mix(in srgb, var(--card) 74%, transparent);
+  --monitor-soft: color-mix(in srgb, var(--foreground) 4%, transparent);
+  height: calc(100svh - 142px);
+  padding: 16px 4px 44px 2px;
+  overflow-y: auto;
+  scrollbar-color: var(--monitor-line-strong) transparent;
+  scrollbar-width: thin;
+  text-rendering: auto;
+}
+
+.modeBar {
+  display: flex;
+  min-height: 50px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.modeBar > p {
+  margin: 10px 0 0;
+  color: var(--monitor-copy);
+  font-size: 11px;
+  font-weight: 470;
+}
+
+.modeTabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--monitor-soft);
+  border: 1px solid var(--monitor-line);
+  border-radius: var(--monitor-radius);
+}
+
+.modeTabs button {
+  display: inline-flex;
+  min-width: 126px;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  color: var(--monitor-copy);
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--monitor-radius) - 4px);
+  font-size: 12px;
+  font-weight: 520;
+}
+
+.modeTabs button small {
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.modeTabs button:hover {
+  color: var(--foreground);
+  background: var(--monitor-soft);
+}
+
+.modeTabs .activeMode {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.modeTabs .activeMode small {
+  color: color-mix(in srgb, var(--primary-foreground) 66%, transparent);
+}
+
+.modePanel {
+  min-width: 0;
+}
+
+.canvasViewport,
+.canvas {
+  min-width: 0;
+}
+
+.videoStage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: min(58vh, 620px);
+  min-height: 390px;
+  overflow: hidden;
+  background: #050506;
+  border: 1px solid var(--monitor-line);
+  border-radius: var(--monitor-radius);
+  outline: 0;
+  isolation: isolate;
+}
+
+.videoStage:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+.videoPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: rgba(235, 235, 230, 0.74);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.055), transparent 31%),
+    linear-gradient(135deg, #080809, #030304 64%, #080808);
+}
+
+.videoPlaceholder::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.42;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at center, #000 25%, transparent 76%);
+}
+
+.scanLine {
+  position: absolute;
+  z-index: 1;
+  right: 8%;
+  left: 8%;
+  height: 1px;
+  opacity: 0.34;
+  background: linear-gradient(90deg, transparent, rgba(218, 232, 226, 0.72), transparent);
+  animation: scan 5.8s ease-in-out infinite;
+}
+
+.frameCorners {
+  position: absolute;
+  inset: 30px;
+  opacity: 0.32;
+  background:
+    linear-gradient(var(--foreground), var(--foreground)) left top / 36px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) left top / 1px 36px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) right top / 36px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) right top / 1px 36px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) left bottom / 36px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) left bottom / 1px 36px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) right bottom / 36px 1px no-repeat,
+    linear-gradient(var(--foreground), var(--foreground)) right bottom / 1px 36px no-repeat;
+}
+
+.videoEmptyState {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.videoEmptyState svg {
+  margin-bottom: 4px;
+  color: rgba(235, 235, 230, 0.54);
+}
+
+.videoEmptyState strong {
+  color: rgba(242, 242, 237, 0.86);
+  font-size: 14px;
+  font-weight: 470;
+}
+
+.videoEmptyState span {
+  color: rgba(242, 242, 237, 0.34);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+}
+
+.deviceStatus {
+  position: absolute;
+  z-index: 4;
+  top: 18px;
+  left: 18px;
+  display: grid;
+  min-width: 224px;
+  min-height: 54px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  color: rgba(242, 242, 237, 0.9);
+  background: rgba(6, 6, 7, 0.64);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: var(--monitor-radius);
+  backdrop-filter: blur(14px);
+}
+
+.statusDot,
+.controlStatus > span,
+.locationState > span {
+  width: 7px;
+  height: 7px;
+  background: #8e8a83;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(142, 138, 131, 0.11);
+}
+
+.deviceStatus[data-status="online"] .statusDot,
+.controlStatus > span[data-status="online"] {
+  background: #6db18b;
+  box-shadow: 0 0 0 4px rgba(109, 177, 139, 0.13);
+}
+
+.deviceStatus[data-status="connecting"] .statusDot,
+.controlStatus > span[data-status="connecting"] {
+  background: #d0a64d;
+  animation: status-pulse 1.6s ease-in-out infinite;
+}
+
+.deviceStatus[data-status="error"] .statusDot,
+.controlStatus > span[data-status="error"] {
+  background: var(--destructive);
+}
+
+.deviceStatus > div {
+  display: grid;
+  gap: 2px;
+}
+
+.deviceStatus strong {
+  font-size: 11px;
+  font-weight: 550;
+}
+
+.deviceStatus small,
+.deviceStatus time {
+  color: rgba(242, 242, 237, 0.52);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+}
+
+.deviceStatus time {
+  white-space: nowrap;
+}
+
+.controlHint {
+  position: absolute;
+  z-index: 3;
+  right: 18px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(242, 242, 237, 0.46);
+  font-size: 9px;
+  transition: opacity 180ms ease;
+}
+
+.controlHint span {
+  width: 20px;
+  height: 1px;
+  background: rgba(242, 242, 237, 0.32);
+}
+
+.playerControls {
+  position: absolute;
+  z-index: 5;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  display: grid;
+  min-height: 62px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 9px 12px;
+  color: rgba(242, 242, 237, 0.88);
+  background: rgba(7, 7, 8, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--monitor-radius);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 200ms ease 420ms,
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1) 420ms;
+}
+
+.videoStage:hover .playerControls,
+.videoStage:focus-within .playerControls,
+.videoStage:focus .playerControls {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition-delay: 0ms;
+}
+
+.videoStage:hover .controlHint,
+.videoStage:focus-within .controlHint,
+.videoStage:focus .controlHint {
+  opacity: 0;
+}
+
+.controlStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 520;
+  white-space: nowrap;
+}
+
+.controlButtons {
+  display: flex;
+  min-width: 0;
+  justify-content: center;
+  gap: 6px;
+}
+
+.controlButtons button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  color: rgba(242, 242, 237, 0.76);
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  font-size: 10px;
+}
+
+.controlButtons button:disabled,
+.uploadRegion button:disabled,
+.coordinatePanel button:disabled {
+  cursor: not-allowed;
+  color: var(--muted-foreground);
+  background: var(--monitor-soft);
+  border-color: var(--monitor-line);
+  opacity: 0.68;
+}
+
+.pendingLabel {
+  padding: 5px 7px;
+  color: rgba(242, 242, 237, 0.44);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.dataSection {
+  padding-top: 25px;
+  margin-top: 25px;
+  border-top: 1px solid var(--monitor-line);
+}
+
+.dataHeading,
+.sectionIntro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.dataHeading {
+  min-height: 54px;
+}
+
+.dataHeading p,
+.dataHeading h2,
+.sectionIntro p,
+.sectionIntro h2 {
+  margin: 0;
+}
+
+.dataHeading p,
+.sectionIntro p {
+  margin-bottom: 5px;
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  font-weight: 550;
+}
+
+.dataHeading h2,
+.sectionIntro h2 {
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 480;
+}
+
+.dataHeading > span,
+.sectionIntro > span {
+  margin-top: 8px;
+  color: var(--monitor-copy);
+  font-size: 10px;
+  font-weight: 470;
+}
+
+.tableFrame {
+  overflow: hidden;
+  background: color-mix(in srgb, var(--background) 73%, transparent);
+  border: 1px solid var(--monitor-line);
+  border-radius: var(--monitor-radius);
+}
+
+.tableScroller {
+  overflow-x: auto;
+  scrollbar-color: var(--monitor-line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.tableFrame table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tableFrame th {
+  height: 43px;
+  padding: 0 13px;
+  color: var(--monitor-copy);
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  border-bottom: 1px solid var(--monitor-line);
+  font-size: 11px;
+  font-weight: 560;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.emptyRows {
+  display: grid;
+  min-height: 94px;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  color: var(--monitor-copy);
+}
+
+.emptyRows span {
+  width: 24px;
+  height: 1px;
+  background: var(--monitor-line-strong);
+}
+
+.emptyRows p {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 470;
+}
+
+.localInputGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(230px, 1fr);
+  gap: 12px;
+}
+
+.uploadRegion,
+.coordinatePanel {
+  min-width: 0;
+  padding: 17px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card) 72%, transparent),
+    color-mix(in srgb, var(--background) 82%, transparent)
+  );
+  border: 1px solid var(--monitor-line);
+  border-radius: var(--monitor-radius);
+}
+
+.dropZone {
+  display: grid;
+  min-height: 238px;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--monitor-copy);
+  border: 1px dashed var(--monitor-line-strong);
+  border-radius: var(--monitor-radius);
+  text-align: center;
+}
+
+.uploadIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 4px;
+  place-items: center;
+  color: var(--foreground);
+  background: var(--monitor-soft);
+  border: 1px solid var(--monitor-line);
+  border-radius: 50%;
+}
+
+.dropZone strong {
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 520;
+}
+
+.dropZone p {
+  margin: 0;
+  font-size: 10px;
+}
+
+.dropZone button,
+.uploadFooter button,
+.locationButton {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 520;
+}
+
+.dropZone button {
+  margin-top: 8px;
+}
+
+.uploadFooter {
+  display: flex;
+  min-height: 58px;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 13px;
+}
+
+.uploadFooter > div {
+  display: grid;
+  gap: 3px;
+}
+
+.uploadFooter span {
+  color: var(--muted-foreground);
+  font-size: 9px;
+}
+
+.uploadFooter strong {
+  color: var(--monitor-copy);
+  font-size: 10px;
+  font-weight: 480;
+}
+
+.coordinatePanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.coordinatePanel .sectionIntro > svg {
+  margin-top: 4px;
+  color: var(--chart-3);
+}
+
+.coordinateReadout {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.coordinateReadout label {
+  display: grid;
+  gap: 6px;
+}
+
+.coordinateReadout label span {
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+}
+
+.coordinateReadout input {
+  width: 100%;
+  height: 39px;
+  padding: 0 11px;
+  color: var(--monitor-copy);
+  background: var(--monitor-soft);
+  border: 1px solid var(--monitor-line);
+  border-radius: 12px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+}
+
+.locationState {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--monitor-line);
+}
+
+.locationState > div {
+  display: grid;
+  gap: 3px;
+}
+
+.locationState strong {
+  color: var(--foreground);
+  font-size: 10px;
+  font-weight: 520;
+}
+
+.locationState small {
+  color: var(--monitor-copy);
+  font-size: 9px;
+}
+
+.locationButton {
+  width: 100%;
+  min-height: 40px;
+  margin-top: auto;
+}
+
+@keyframes scan {
+  0%,
+  100% {
+    top: 18%;
+    opacity: 0.08;
+  }
+  50% {
+    top: 78%;
+    opacity: 0.36;
+  }
+}
+
+@keyframes status-pulse {
+  50% {
+    opacity: 0.44;
+    box-shadow: 0 0 0 7px rgba(208, 166, 77, 0.08);
+  }
+}
+
+@media (max-width: 1080px) {
+  .videoStage {
+    min-height: 340px;
+  }
+
+  .controlButtons button span {
+    display: none;
+  }
+
+  .controlButtons button {
+    width: 40px;
+    padding: 0;
+  }
+
+  .localInputGrid {
+    grid-template-columns: minmax(0, 1.85fr) minmax(210px, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .workspace {
+    height: calc(100svh - 126px);
+    padding-top: 10px;
+    padding-bottom: 26px;
+  }
+
+  .modeBar {
+    display: grid;
+    min-height: 42px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .modeBar > p {
+    margin-top: 0;
+    font-size: 9px;
+  }
+
+  .modeTabs {
+    gap: 2px;
+    padding: 3px;
+  }
+
+  .modeTabs button {
+    width: 50%;
+    min-width: 0;
+    min-height: 44px;
+    gap: 3px;
+    padding: 0 3px;
+    font-size: 8px;
+  }
+
+  .modeTabs button small {
+    font-size: 6px;
+  }
+
+  .videoStage {
+    width: 100%;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .frameCorners {
+    inset: 18px;
+  }
+
+  .deviceStatus {
+    top: 5px;
+    left: 5px;
+    min-width: 188px;
+    min-height: 46px;
+    padding: 6px 9px;
+    transform: scale(0.52);
+    transform-origin: top left;
+  }
+
+  .deviceStatus strong {
+    font-size: 10px;
+  }
+
+  .deviceStatus small,
+  .deviceStatus time {
+    font-size: 7px;
+  }
+
+  .videoEmptyState strong {
+    font-size: 11px;
+  }
+
+  .videoEmptyState {
+    transform: scale(0.62);
+  }
+
+  .playerControls {
+    right: auto;
+    bottom: 4px;
+    left: 4px;
+    width: calc(200% - 16px);
+    min-height: 54px;
+    gap: 8px;
+    padding: 6px 8px;
+    opacity: 1;
+    transform: scale(0.5);
+    transform-origin: bottom left;
+    pointer-events: auto;
+  }
+
+  .videoStage:hover .playerControls,
+  .videoStage:focus-within .playerControls,
+  .videoStage:focus .playerControls {
+    transform: scale(0.5);
+  }
+
+  .controlHint {
+    display: none;
+  }
+
+  .controlButtons {
+    gap: 4px;
+  }
+
+  .controlButtons button {
+    width: 44px;
+    min-height: 44px;
+  }
+
+  .controlStatus {
+    font-size: 9px;
+  }
+
+  .pendingLabel {
+    display: none;
+  }
+
+  .dataSection {
+    padding-top: 18px;
+    margin-top: 18px;
+  }
+
+  .dataHeading {
+    min-height: 46px;
+    gap: 5px;
+  }
+
+  .dataHeading p,
+  .sectionIntro p {
+    font-size: 8px;
+  }
+
+  .dataHeading h2,
+  .sectionIntro h2 {
+    font-size: 11px;
+  }
+
+  .dataHeading > span,
+  .sectionIntro > span {
+    max-width: 48%;
+    margin-top: 5px;
+    font-size: 9px;
+  }
+
+  .tableFrame th {
+    height: 38px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .emptyRows {
+    min-height: 76px;
+  }
+
+  .emptyRows p {
+    font-size: 9px;
+  }
+
+  .localInputGrid {
+    grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .uploadRegion,
+  .coordinatePanel {
+    padding: 4px;
+  }
+
+  .sectionIntro {
+    gap: 3px;
+  }
+
+  .sectionIntro > span,
+  .coordinatePanel .sectionIntro > svg {
+    display: none;
+  }
+
+  .dropZone {
+    min-height: 116px;
+    gap: 4px;
+    margin-top: 5px;
+    padding: 3px;
+  }
+
+  .uploadIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .uploadIcon svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .dropZone strong {
+    font-size: 8px;
+  }
+
+  .dropZone p,
+  .uploadFooter strong {
+    font-size: 7px;
+  }
+
+  .dropZone button,
+  .uploadFooter button,
+  .locationButton {
+    min-height: 44px;
+    padding: 0 4px;
+    font-size: 7px;
+  }
+
+  .uploadFooter {
+    min-height: 38px;
+    gap: 3px;
+    padding-top: 4px;
+  }
+
+  .uploadFooter span {
+    font-size: 7px;
+  }
+
+  .coordinateReadout {
+    gap: 4px;
+    margin-top: 7px;
+  }
+
+  .coordinateReadout label {
+    gap: 3px;
+  }
+
+  .coordinateReadout label span {
+    overflow: hidden;
+    font-size: 6px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .coordinateReadout input {
+    height: 25px;
+    padding: 0 3px;
+    font-size: 7px;
+  }
+
+  .locationState {
+    gap: 4px;
+    padding: 6px 0;
+    margin-top: 6px;
+  }
+
+  .locationState > span {
+    width: 5px;
+    height: 5px;
+    flex: 0 0 5px;
+  }
+
+  .locationState strong {
+    font-size: 7px;
+  }
+
+  .locationState small {
+    font-size: 6px;
+  }
+}
+
+@media (hover: none) {
+  .playerControls {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .controlHint {
+    display: none;
+  }
+}
+
+@media (hover: none) and (max-width: 767px) {
+  .playerControls {
+    transform: scale(0.5);
+  }
+}
+
+@media (max-width: 767px) {
+  .canvasViewport {
+    position: relative;
+    height: var(--monitor-canvas-height);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .canvas {
+    width: 860px;
+    transform: scale(var(--monitor-canvas-scale));
+    transform-origin: top left;
+  }
+
+  .videoStage {
+    width: 100%;
+    min-height: 390px;
+    max-height: min(58vh, 620px);
+  }
+
+  .frameCorners {
+    inset: 30px;
+  }
+
+  .deviceStatus {
+    top: 18px;
+    left: 18px;
+    min-width: 224px;
+    min-height: 54px;
+    padding: 8px 12px;
+    transform: none;
+  }
+
+  .deviceStatus strong {
+    font-size: 11px;
+  }
+
+  .deviceStatus small,
+  .deviceStatus time {
+    font-size: 8px;
+  }
+
+  .videoEmptyState {
+    transform: none;
+  }
+
+  .videoEmptyState strong {
+    font-size: 14px;
+  }
+
+  .playerControls,
+  .videoStage:hover .playerControls,
+  .videoStage:focus-within .playerControls,
+  .videoStage:focus .playerControls {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: auto;
+    min-height: 62px;
+    gap: 18px;
+    padding: 9px 12px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .controlButtons {
+    gap: 6px;
+  }
+
+  .controlButtons button {
+    width: 44px;
+    min-height: 44px;
+  }
+
+  .controlStatus {
+    font-size: 10px;
+  }
+
+  .dataSection {
+    padding-top: 25px;
+    margin-top: 25px;
+  }
+
+  .dataHeading {
+    min-height: 54px;
+    gap: 18px;
+  }
+
+  .dataHeading p,
+  .sectionIntro p {
+    font-size: 9px;
+  }
+
+  .dataHeading h2,
+  .sectionIntro h2 {
+    font-size: 15px;
+  }
+
+  .dataHeading > span,
+  .sectionIntro > span {
+    display: initial;
+    max-width: none;
+    margin-top: 8px;
+    font-size: 10px;
+  }
+
+  .tableFrame th {
+    height: 43px;
+    padding: 0 13px;
+    font-size: 11px;
+  }
+
+  .emptyRows {
+    min-height: 94px;
+  }
+
+  .emptyRows p {
+    font-size: 10px;
+  }
+
+  .localInputGrid {
+    grid-template-columns: minmax(0, 2.1fr) minmax(230px, 1fr);
+    gap: 12px;
+  }
+
+  .uploadRegion,
+  .coordinatePanel {
+    padding: 17px;
+  }
+
+  .sectionIntro {
+    gap: 18px;
+  }
+
+  .coordinatePanel .sectionIntro > svg {
+    display: block;
+  }
+
+  .dropZone {
+    min-height: 238px;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 0;
+  }
+
+  .uploadIcon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .uploadIcon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dropZone strong {
+    font-size: 13px;
+  }
+
+  .dropZone p {
+    font-size: 10px;
+  }
+
+  .dropZone button,
+  .uploadFooter button,
+  .locationButton {
+    min-height: 44px;
+    padding: 0 13px;
+    font-size: 10px;
+  }
+
+  .uploadFooter {
+    min-height: 58px;
+    gap: 14px;
+    padding-top: 13px;
+  }
+
+  .uploadFooter span {
+    font-size: 9px;
+  }
+
+  .uploadFooter strong {
+    font-size: 10px;
+  }
+
+  .coordinateReadout {
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .coordinateReadout label {
+    gap: 6px;
+  }
+
+  .coordinateReadout label span {
+    overflow: visible;
+    font-size: 8px;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .coordinateReadout input {
+    height: 39px;
+    padding: 0 11px;
+    font-size: 12px;
+  }
+
+  .locationState {
+    gap: 10px;
+    padding: 14px 0;
+    margin-top: 16px;
+  }
+
+  .locationState > span {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+  }
+
+  .locationState strong {
+    font-size: 10px;
+  }
+
+  .locationState small {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanLine,
+  .deviceStatus[data-status="connecting"] .statusDot,
+  .controlStatus > span[data-status="connecting"] {
+    animation: none;
+  }
+
+  .playerControls,
+  .controlHint {
+    transition: none;
+  }
+}

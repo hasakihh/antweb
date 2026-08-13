@@ -1,19 +1,204 @@
 @import "tailwindcss";
 
 :root {
-  --page-black: #050505;
-  --panel-black: rgba(12, 12, 12, 0.88);
-  --paper: #f2f2ed;
-  --paper-soft: #c8c8c2;
-  --muted: #8a8a85;
-  --faint: #5f5f5b;
-  --line: rgba(255, 255, 255, 0.13);
-  --line-strong: rgba(255, 255, 255, 0.24);
+  --card: #121212;
+  --ring: #d2d2cc;
+  --input: #242424;
+  --muted: #202020;
+  --accent: #2a2a2a;
+  --border: #2c2c2c;
+  --radius: 0.5rem;
+  --chart-1: #d8a347;
+  --chart-2: #72b7ce;
+  --chart-3: #79aa98;
+  --chart-4: #969690;
+  --chart-5: #5f5f5b;
+  --popover: #151515;
+  --primary: #f2f2ed;
+  --sidebar: #0b0b0b;
+  --spacing: 0.25rem;
+  --font-mono: var(--font-geist-mono), monospace;
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --secondary: #1b1b1b;
+  --background: #080808;
+  --font-serif: "Playfair Display", serif;
+  --foreground: #f2f2ed;
+  --destructive: #ef4444;
+  --shadow-blur: 15px;
+  --shadow-color: #000000;
+  --sidebar-ring: #d2d2cc;
+  --shadow-spread: 0px;
+  --letter-spacing: 0.01em;
+  --shadow-opacity: 0.3;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-border: #252525;
+  --card-foreground: #f2f2ed;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 6px;
+  --sidebar-primary: #f2f2ed;
+  --muted-foreground: #8a8a85;
+  --accent-foreground: #f2f2ed;
+  --popover-foreground: #f2f2ed;
+  --primary-foreground: #080808;
+  --sidebar-foreground: #f2f2ed;
+  --secondary-foreground: #c8c8c2;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #f2f2ed;
+  --sidebar-primary-foreground: #080808;
+  --sidebar-microcopy: #a5a5a0;
+  --ambient-glow: rgba(255, 255, 255, 0.085);
+  --card-gradient: linear-gradient(145deg, #1e1e1e 0%, #0d0d0d 44%, #050505 100%);
+  --rail-gradient: linear-gradient(180deg, rgba(20, 20, 20, 0.42), rgba(8, 8, 8, 0.2));
+  --page-black: var(--background);
+  --panel-black: color-mix(in srgb, var(--card) 88%, transparent);
+  --paper: var(--foreground);
+  --paper-soft: var(--secondary-foreground);
+  --faint: color-mix(in srgb, var(--muted-foreground) 72%, var(--background));
+  --line: color-mix(in srgb, var(--foreground) 13%, transparent);
+  --line-strong: color-mix(in srgb, var(--foreground) 24%, transparent);
+}
+
+:root[data-theme="warm-light"] {
+  --card: #f4efe4;
+  --ring: #2e2e2e;
+  --input: #d2cbbb;
+  --muted: #cfc8b8;
+  --accent: #e6e4d7;
+  --border: #d2cbbb;
+  --radius: 0.5rem;
+  --chart-1: #f26a4b;
+  --chart-2: #1e1e1e;
+  --chart-3: #5e5a52;
+  --chart-4: #a89f8f;
+  --chart-5: #cfc8b8;
+  --popover: #f4efe4;
+  --primary: #2e2e2e;
+  --sidebar: #e3ddcf;
+  --spacing: 0.25rem;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+  --secondary: #d8d2c4;
+  --background: #e9e4d8;
+  --font-serif: "Playfair Display", serif;
+  --foreground: #1e1e1e;
+  --destructive: #dc2626;
+  --shadow-blur: 10px;
+  --shadow-color: #000000;
+  --sidebar-ring: #2e2e2e;
+  --shadow-spread: 0px;
+  --letter-spacing: 0.01em;
+  --shadow-opacity: 0.1;
+  --sidebar-accent: #e6e4d7;
+  --sidebar-border: #d2cbbb;
+  --card-foreground: #1e1e1e;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 4px;
+  --sidebar-primary: #2e2e2e;
+  --muted-foreground: #5e5a52;
+  --accent-foreground: #2e2e2e;
+  --popover-foreground: #1e1e1e;
+  --primary-foreground: #e6e4d7;
+  --sidebar-foreground: #1e1e1e;
+  --secondary-foreground: #2e2e2e;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #2e2e2e;
+  --sidebar-primary-foreground: #e6e4d7;
+  --sidebar-microcopy: #5e5a52;
+  --ambient-glow: rgba(255, 255, 255, 0.56);
+  --card-gradient: linear-gradient(145deg, #fbf7ee 0%, #f4efe4 46%, #e6e0d3 100%);
+  --rail-gradient: linear-gradient(180deg, rgba(244, 239, 228, 0.7), rgba(216, 210, 196, 0.38));
+}
+
+:root[data-theme="warm-dark"] {
+  --card: #1c1c1c;
+  --ring: #d1cfc0;
+  --input: #2c2c2c;
+  --muted: #2a2a2a;
+  --accent: #363636;
+  --border: #2c2c2c;
+  --radius: 0.5rem;
+  --chart-1: #f26a4b;
+  --chart-2: #d9cfc2;
+  --chart-3: #8e8a83;
+  --chart-4: #5c5a56;
+  --chart-5: #3b3b3b;
+  --popover: #1c1c1c;
+  --primary: #d1cfc0;
+  --sidebar: #101010;
+  --spacing: 0.25rem;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+  --secondary: #222222;
+  --background: #141414;
+  --font-serif: "Playfair Display", serif;
+  --foreground: #e8e3da;
+  --destructive: #ef4444;
+  --shadow-blur: 15px;
+  --shadow-color: #000000;
+  --sidebar-ring: #d1cfc0;
+  --shadow-spread: 0px;
+  --letter-spacing: 0.01em;
+  --shadow-opacity: 0.3;
+  --sidebar-accent: #363636;
+  --sidebar-border: #2c2c2c;
+  --card-foreground: #e8e3da;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 6px;
+  --sidebar-primary: #d1cfc0;
+  --muted-foreground: #8e8a83;
+  --accent-foreground: #d1cfc0;
+  --popover-foreground: #e8e3da;
+  --primary-foreground: #363636;
+  --sidebar-foreground: #e8e3da;
+  --secondary-foreground: #d1cfc0;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #d1cfc0;
+  --sidebar-primary-foreground: #363636;
+  --sidebar-microcopy: #a9a59d;
+  --ambient-glow: rgba(209, 207, 192, 0.1);
+  --card-gradient: linear-gradient(145deg, #262626 0%, #1c1c1c 46%, #121212 100%);
+  --rail-gradient: linear-gradient(180deg, rgba(34, 34, 34, 0.56), rgba(16, 16, 16, 0.32));
+}
+
+@theme inline {
+  --color-card: var(--card);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --radius-card: var(--radius);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-popover: var(--popover);
+  --color-primary: var(--primary);
+  --color-sidebar: var(--sidebar);
+  --color-secondary: var(--secondary);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-destructive: var(--destructive);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-card-foreground: var(--card-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
 }
 
 * {
   box-sizing: border-box;
-  letter-spacing: 0;
+  letter-spacing: var(--letter-spacing);
 }
 
 html,
@@ -28,6 +213,14 @@ body {
   background: var(--page-black);
   font-family: var(--font-geist-sans), "Microsoft YaHei UI", "Microsoft YaHei",
     "PingFang SC", sans-serif;
+}
+
+body,
+button,
+input,
+textarea {
+  transition: color 240ms ease, background-color 240ms ease,
+    border-color 240ms ease;
 }
 
 button,
@@ -158,7 +351,7 @@ input:focus-visible {
 
 .brand-copy small {
   font-size: 9px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .system-state {
@@ -204,7 +397,7 @@ input:focus-visible {
   font-size: 9px;
   font-weight: 400;
   line-height: 1.5;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .entry-point h1 {
@@ -271,6 +464,7 @@ input:focus-visible {
 .blueprint-image {
   z-index: 2;
   object-fit: contain;
+  object-position: center top;
   opacity: 0.82;
   filter: contrast(0.92) saturate(0.38) brightness(0.94) blur(0.15px);
   mask-image: radial-gradient(
@@ -383,7 +577,7 @@ input:focus-visible {
 
 .current-count small {
   font-size: 9px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .trend-summary dl {
@@ -591,7 +785,7 @@ input:focus-visible {
   height: 36px;
   padding: 0;
   place-items: center;
-  color: var(--muted);
+  color: var(--muted-foreground);
   background: rgba(0, 0, 0, 0.24);
   border: 1px solid var(--line);
   border-radius: 50%;
@@ -622,7 +816,7 @@ input:focus-visible {
 .dialog-description {
   margin: 10px 0 0;
   font-size: 16px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .auth-form {
@@ -705,7 +899,7 @@ input:focus-visible {
   height: 50px;
   padding: 0;
   place-items: center;
-  color: var(--muted);
+  color: var(--muted-foreground);
   background: transparent;
   border: 0;
   border-left: 1px solid var(--line);
@@ -769,7 +963,7 @@ input:focus-visible {
   margin: -1px 0 0;
   text-align: center;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .form-status {

@@ -112,7 +112,7 @@
   background: var(--dashboard-background, var(--page-black));
   border: 1px solid var(--dashboard-nav-line-strong, var(--line-strong));
   border-radius: 50%;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.025);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--foreground) 3%, transparent);
   transition: color 160ms ease-out, background 160ms ease-out,
     border-color 160ms ease-out, transform 160ms ease-out;
 }
@@ -131,8 +131,8 @@
 }
 
 .nodeCopy strong {
-  font-size: 10px;
-  font-weight: 550;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -140,9 +140,9 @@
 .nodeCopy small {
   overflow: hidden;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--muted-foreground);
   letter-spacing: 0;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -172,7 +172,7 @@
   color: var(--dashboard-background, var(--page-black));
   background: var(--paper);
   border-color: var(--paper);
-  box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--foreground) 8%, transparent);
 }
 
 .activeNode .nodeCopy,
@@ -180,8 +180,7 @@
   color: var(--paper);
 }
 
-.desktopHub,
-.mobileToggle {
+.hubLink {
   position: absolute;
   z-index: 4;
   top: 50%;
@@ -192,17 +191,18 @@
   justify-items: center;
   gap: 3px;
   color: var(--paper);
-  background: rgba(8, 8, 8, 0.92);
+  background: color-mix(in srgb, var(--background) 92%, transparent);
   border: 1px solid var(--dashboard-nav-line-strong, var(--line-strong));
   border-radius: 50%;
   transform: translate(-50%, -50%);
-}
-
-.desktopHub {
   display: grid;
+  text-decoration: none;
+  pointer-events: auto;
+  transition: color 160ms ease-out, background 160ms ease-out,
+    border-color 160ms ease-out, transform 160ms ease-out;
 }
 
-.desktopHub::before {
+.hubLink::before {
   position: absolute;
   inset: -8px;
   content: "";
@@ -210,21 +210,35 @@
   border-radius: 50%;
 }
 
-.desktopHub span,
-.mobileToggle span {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
-  font-weight: 500;
-  color: var(--muted);
+.hubLink span {
+  color: var(--sidebar-microcopy);
+  font-family: var(--font-geist-sans), "Microsoft YaHei UI", sans-serif;
+  font-size: 9px;
+  font-weight: 550;
+  line-height: 1.2;
+  transition: color 160ms ease-out;
 }
 
-.mobileToggle {
-  display: none;
-  padding: 0;
-  pointer-events: auto;
+.hubLink:hover,
+.hubLink:focus-visible,
+.activeHub {
+  color: var(--dashboard-background, var(--page-black));
+  background: var(--paper);
+  border-color: var(--paper);
 }
 
-.mobileToggle:focus-visible {
+.hubLink:hover,
+.hubLink:focus-visible {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.hubLink:hover span,
+.hubLink:focus-visible span,
+.activeHub span {
+  color: var(--faint);
+}
+
+.hubLink:focus-visible {
   outline: 2px solid var(--paper);
   outline-offset: 4px;
 }
@@ -236,27 +250,7 @@
     top: 2px;
     left: var(--dashboard-rail-center, 110px);
     width: 220px;
-    height: 186px;
-  }
-
-  .mobileOpen {
-    background: transparent;
-    border: 0;
-    backdrop-filter: none;
-  }
-
-  .orbitStage {
-    visibility: hidden;
-    opacity: 0;
-    transform: scale(0.74);
-    transition-delay: 0s, 0s, 220ms;
-  }
-
-  .mobileOpen .orbitStage {
-    visibility: visible;
-    opacity: 1;
-    transform: scale(1);
-    transition-delay: 0s;
+    height: 202px;
   }
 
   .outerRing::before {
@@ -282,26 +276,11 @@
   }
 
   .nodeCopy small {
-    display: none;
+    font-size: 6px;
   }
 
-  .desktopHub {
-    display: none;
-  }
-
-  .mobileToggle {
-    display: grid;
-    width: 48px;
-    height: 48px;
-  }
-
-  .mobileOpen .mobileToggle {
-    background: var(--paper);
-    color: var(--dashboard-background, var(--page-black));
-  }
-
-  .mobileOpen .mobileToggle span {
-    color: var(--faint);
+  .hubLink span {
+    font-size: 8px;
   }
 }
 
@@ -321,7 +300,7 @@
   .root {
     --orbit-radius: 50px;
     --orbit-node: 34px;
-    height: 156px;
+    height: 174px;
   }
 
   .nodeCopy {
@@ -332,9 +311,8 @@
     font-size: 7px;
   }
 
-  .mobileToggle {
-    width: 44px;
-    height: 44px;
+  .nodeCopy small {
+    font-size: 5px;
   }
 }
 
@@ -346,6 +324,7 @@
   .orbitStage,
   .nodeIcon,
   .nodeCopy,
+  .hubLink,
   .root {
     transition: none;
   }

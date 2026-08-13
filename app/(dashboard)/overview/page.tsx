@@ -1,5 +1,5 @@
-import { PageScaffold } from "@/components/dashboard/page-scaffold";
+import { VercelV0Chat } from "@/components/ui/v0-ai-chat";
 
 export default function OverviewPage() {
-  return <PageScaffold title="概览" />;
+  return <VercelV0Chat />;
 }

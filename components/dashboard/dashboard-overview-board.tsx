@@ -20,6 +20,7 @@ import {
   Thermometer,
 } from "lucide-react";
 import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
+import { useEnvironmentData } from "@/components/environment/environment-data-provider";
 import classes from "./dashboard-overview-board.module.css";
 
 type RangeKey = "day" | "week" | "month" | "year";
@@ -142,6 +143,7 @@ function RangeTabs({
 }
 
 export function DashboardOverviewBoard() {
+  const { snapshot } = useEnvironmentData();
   const [range, setRange] = useState<RangeKey>("week");
   const [isSwitching, setIsSwitching] = useState(false);
   const [activeDetail, setActiveDetail] = useState<DashboardDetail | null>(null);
@@ -157,6 +159,15 @@ export function DashboardOverviewBoard() {
     getReducedMotionServerSnapshot,
   );
   const data = trendData[range];
+  const latestEnvironment = snapshot.latest;
+  const currentTemperature = latestEnvironment?.temperature ?? 0;
+  const currentHumidity = latestEnvironment?.relativeHumidity ?? 0;
+  const temperatureDelta = snapshot.temperatureDelta;
+  const humidityDelta = snapshot.humidityDelta;
+  const signedValue = (value: number | null, suffix: string) => {
+    if (value === null) return `--${suffix}`;
+    return `${value > 0 ? "+" : ""}${value}${suffix}`;
+  };
 
   useEffect(
     () => () => {
@@ -231,15 +242,17 @@ export function DashboardOverviewBoard() {
       content: (
         <div className={classes.metricBody}>
           <div className={classes.metricValue}>
-            <strong>26.4</strong>
+            <strong>{currentTemperature.toFixed(1)}</strong>
             <span>°C</span>
           </div>
           <div className={classes.secondaryMetric}>
             <Droplets size={12} strokeWidth={1.7} aria-hidden="true" />
-            <strong>71%</strong>
+            <strong>{currentHumidity}%</strong>
             <span>RH</span>
           </div>
-          <small>较前一小时 +0.6°C / -2% RH</small>
+          <small>
+            较前一小时 {signedValue(temperatureDelta, "°C")} / {signedValue(humidityDelta, "% RH")}
+          </small>
         </div>
       ),
     },
@@ -612,11 +625,11 @@ export function DashboardOverviewBoard() {
                   <>
                     <div>
                       <span>当前温度</span>
-                      <strong>26.4 <small>°C</small></strong>
+                      <strong>{currentTemperature.toFixed(1)} <small>°C</small></strong>
                     </div>
                     <div>
                       <span>当前湿度</span>
-                      <strong>71 <small>% RH</small></strong>
+                      <strong>{currentHumidity} <small>% RH</small></strong>
                     </div>
                     <div className={classes.detailLegend}>
                       <span data-series="temperature">温度</span>

@@ -9,13 +9,13 @@ import {
   useState,
 } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Radar, X } from "lucide-react";
+import { Radar } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./radial-orbital-navigation.module.css";
 
 export type OrbitNavigationId =
-  | "overview"
+  | "monitoring"
   | "environment"
   | "map"
   | "risk-analysis"
@@ -47,22 +47,18 @@ export function RadialOrbitalNavigation({
   const pathname = usePathname();
   const rootRef = useRef<HTMLDivElement>(null);
   const resumeTimerRef = useRef<number | null>(null);
-  const [openAtPathname, setOpenAtPathname] = useState<string | null>(null);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [isInteractionPaused, setIsInteractionPaused] = useState(false);
   const [orbitRadius, setOrbitRadius] = useState(120);
   const [isOrbitReady, setIsOrbitReady] = useState(false);
-  const isMobileOpen = openAtPathname === pathname;
-  const activeIndex = Math.max(
-    0,
-    items.findIndex(
-      (item) =>
-        pathname === item.href || pathname.startsWith(`${item.href}/`),
-    ),
+  const activeIndex = items.findIndex(
+    (item) =>
+      pathname === item.href || pathname.startsWith(`${item.href}/`),
   );
+  const isHubActive = pathname === "/overview";
   const angleStep = 360 / items.length;
   const [rotationAngle, setRotationAngle] = useState(
-    () => -activeIndex * angleStep,
+    () => -(activeIndex >= 0 ? activeIndex : 0) * angleStep,
   );
   const previousActiveIndexRef = useRef(activeIndex);
 
@@ -128,8 +124,8 @@ export function RadialOrbitalNavigation({
 
   useEffect(() => {
     const previousIndex = previousActiveIndexRef.current;
-    if (previousIndex === activeIndex) return;
     previousActiveIndexRef.current = activeIndex;
+    if (activeIndex < 0 || previousIndex === activeIndex) return;
     rotateToIndex(activeIndex);
   }, [activeIndex, rotateToIndex]);
 
@@ -141,33 +137,6 @@ export function RadialOrbitalNavigation({
     },
     [],
   );
-
-  useEffect(() => {
-    if (!isMobileOpen) return;
-
-    function closeOnOutsidePointer(event: PointerEvent) {
-      if (
-        rootRef.current &&
-        !rootRef.current.contains(event.target as Node)
-      ) {
-        setOpenAtPathname(null);
-      }
-    }
-
-    function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpenAtPathname(null);
-      }
-    }
-
-    document.addEventListener("pointerdown", closeOnOutsidePointer);
-    document.addEventListener("keydown", closeOnEscape);
-
-    return () => {
-      document.removeEventListener("pointerdown", closeOnOutsidePointer);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [isMobileOpen]);
 
   function resumeAfterFocusLeaves(event: FocusEvent<HTMLElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -185,10 +154,7 @@ export function RadialOrbitalNavigation({
   }
 
   return (
-    <div
-      ref={rootRef}
-      className={`${styles.root} ${isMobileOpen ? styles.mobileOpen : ""}`}
-    >
+    <div ref={rootRef} className={styles.root}>
       <nav
         className={styles.navigation}
         aria-label="监测平台主导航"
@@ -226,10 +192,7 @@ export function RadialOrbitalNavigation({
                     }`}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    onClick={() => {
-                      rotateToIndex(index);
-                      setOpenAtPathname(null);
-                    }}
+                    onClick={() => rotateToIndex(index)}
                   >
                     <span className={styles.nodeIcon} aria-hidden="true">
                       <Icon size={18} strokeWidth={1.7} />
@@ -245,30 +208,15 @@ export function RadialOrbitalNavigation({
           </ul>
         </div>
 
-        <div className={styles.desktopHub} aria-hidden="true">
-          <Radar size={22} strokeWidth={1.5} />
-          <span>NAV / 05</span>
-        </div>
-
-        <button
-          className={styles.mobileToggle}
-          type="button"
-          aria-label={isMobileOpen ? "收起轨道导航" : "展开轨道导航"}
-          aria-expanded={isMobileOpen}
-          aria-controls="dashboard-orbit-navigation"
-          onClick={() =>
-            setOpenAtPathname((currentPathname) =>
-              currentPathname === pathname ? null : pathname,
-            )
-          }
+        <Link
+          className={`${styles.hubLink} ${isHubActive ? styles.activeHub : ""}`}
+          href="/overview"
+          aria-label="返回 AI 会话工作台"
+          aria-current={isHubActive ? "page" : undefined}
         >
-          {isMobileOpen ? (
-            <X size={21} strokeWidth={1.7} aria-hidden="true" />
-          ) : (
-            <Radar size={21} strokeWidth={1.7} aria-hidden="true" />
-          )}
-          <span>NAV</span>
-        </button>
+          <Radar size={21} strokeWidth={1.5} aria-hidden="true" />
+          <span>监测首页</span>
+        </Link>
       </nav>
     </div>
   );
