@@ -2,19 +2,27 @@
 
 import type { CSSProperties } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Camera,
   CircleStop,
-  Crosshair,
   Download,
   ImagePlus,
-  LocateFixed,
   Play,
   ScanSearch,
   Upload,
   Video,
 } from "lucide-react";
+import type { FieldLocation } from "./field-location-map";
 import styles from "./monitoring-workspace.module.css";
+
+const FieldLocationMap = dynamic(
+  () => import("./field-location-map").then((module) => module.FieldLocationMap),
+  {
+    ssr: false,
+    loading: () => <div className={styles.mapLoading}>地图载入中</div>,
+  },
+);
 
 export type MonitoringMode = "live" | "local";
 export type StreamStatus = "offline" | "connecting" | "online" | "error";
@@ -164,11 +172,7 @@ export function MonitoringWorkspace() {
           })}
         </div>
 
-        <p>
-          {mode === "live"
-            ? "田间设备实时画面与识别记录"
-            : "本地图像识别、人工审核与数据归档"}
-        </p>
+
       </div>
 
       <div
@@ -191,6 +195,7 @@ export function MonitoringWorkspace() {
 
 function LiveMonitoringPanel() {
   const streamStatus: StreamStatus = "offline";
+  const [isStreaming, setIsStreaming] = useState(false);
 
   return (
     <section
@@ -205,7 +210,7 @@ function LiveMonitoringPanel() {
           <div className={styles.frameCorners} aria-hidden="true" />
           <div className={styles.videoEmptyState}>
             <Camera size={26} strokeWidth={1.3} aria-hidden="true" />
-            <strong>等待田间摄像头推流</strong>
+            <strong>等待推流ing...</strong>
             <span>LIVE STREAM / NO SIGNAL</span>
           </div>
         </div>
@@ -219,43 +224,48 @@ function LiveMonitoringPanel() {
           <time>最近连接 --:--</time>
         </div>
 
-        <div className={styles.controlHint} aria-hidden="true">
-          <span />
-          移入画面显示控制
-        </div>
-
         <div className={styles.playerControls} aria-label="视频流控制">
           <div className={styles.controlStatus}>
-            <span data-status={streamStatus} />
-            推流已关闭
+            <span data-status={isStreaming ? "connecting" : streamStatus} />
+            {isStreaming ? "等待设备响应" : "推流已关闭"}
           </div>
           <div className={styles.controlButtons}>
-            <SkeletonControl icon={Play} label="开启推流" />
-            <SkeletonControl icon={CircleStop} label="关闭推流" />
-            <SkeletonControl icon={Camera} label="截取当前帧" />
-            <SkeletonControl icon={Download} label="下载图片" />
+            <StreamControl
+              icon={Play}
+              label="开启推流"
+              onClick={() => setIsStreaming(true)}
+              active={isStreaming}
+            />
+            <StreamControl
+              icon={CircleStop}
+              label="关闭推流"
+              onClick={() => setIsStreaming(false)}
+              active={!isStreaming}
+            />
+            <StreamControl icon={Camera} label="截取当前帧" disabled={!isStreaming} />
+            <StreamControl icon={Download} label="下载图片" disabled={!isStreaming} />
           </div>
-          <span className={styles.pendingLabel}>待接入</span>
+          <span className={styles.pendingLabel}>{isStreaming ? "CONNECTING" : "STANDBY"}</span>
         </div>
       </div>
 
       <DataSection
         kicker="LIVE DETECTION LOG"
         title="实时识别记录"
-        description="每次截帧识别结果将在这里等待人工校正"
+        description=""
       >
         <EmptyTable
           minWidth={820}
           columns={[
             "序号",
             "截图",
-            "模型识别数量",
-            "人工校正数量",
+            "数量",
+            "校正数量",
             "采集时间",
             "审核状态",
             "操作",
           ]}
-          emptyText="摄像头开始推流后，截帧识别记录将显示在这里"
+          emptyText="尚未有记录"
         />
       </DataSection>
     </section>
@@ -263,6 +273,11 @@ function LiveMonitoringPanel() {
 }
 
 function LocalDetectionPanel() {
+  const [fieldLocation, setFieldLocation] = useState<FieldLocation | null>(null);
+
+  const longitude = fieldLocation?.longitude.toFixed(6) ?? "--.------";
+  const latitude = fieldLocation?.latitude.toFixed(6) ?? "--.------";
+
   return (
     <section
       className={styles.modePanel}
@@ -275,7 +290,7 @@ function LocalDetectionPanel() {
           <div className={styles.sectionIntro}>
             <div>
               <p>IMAGE INPUT</p>
-              <h2 id="upload-title">上传本地图像</h2>
+              <h2 id="upload-title">图像检测</h2>
             </div>
             <span>支持 JPG / PNG / WEBP</span>
           </div>
@@ -284,8 +299,8 @@ function LocalDetectionPanel() {
             <span className={styles.uploadIcon} aria-hidden="true">
               <ImagePlus size={22} strokeWidth={1.45} />
             </span>
-            <strong>将田间图片拖放至此</strong>
-            <p>或从本地文件中选择需要检测的图像</p>
+            <strong>上传图片</strong>
+            <p>从本地文件中选择需要检测的图像</p>
             <button type="button" disabled>
               <Upload size={15} strokeWidth={1.7} aria-hidden="true" />
               选择图片
@@ -310,39 +325,38 @@ function LocalDetectionPanel() {
               <p>GPS POSITION</p>
               <h2 id="coordinate-title">发现位置</h2>
             </div>
-            <Crosshair size={18} strokeWidth={1.45} aria-hidden="true" />
+            <span>点击地图选择坐标</span>
           </div>
+
+          <FieldLocationMap value={fieldLocation} onChange={setFieldLocation} />
 
           <div className={styles.coordinateReadout}>
             <label>
               <span>经度 LONGITUDE</span>
-              <input value="--.------" readOnly aria-label="经度" />
+              <input value={longitude} readOnly aria-label="经度" />
             </label>
             <label>
               <span>纬度 LATITUDE</span>
-              <input value="--.------" readOnly aria-label="纬度" />
+              <input value={latitude} readOnly aria-label="纬度" />
             </label>
           </div>
 
           <div className={styles.locationState}>
             <span aria-hidden="true" />
             <div>
-              <strong>尚未获取坐标</strong>
-              <small>用于匹配现场天气数据</small>
+              <strong>{fieldLocation ? "位置已选定" : "尚未选择坐标"}</strong>
+              <small>
+                {fieldLocation ? "坐标将用于匹配现场天气数据" : "可点击地图或使用当前位置"}
+              </small>
             </div>
           </div>
-
-          <button className={styles.locationButton} type="button" disabled>
-            <LocateFixed size={15} strokeWidth={1.7} aria-hidden="true" />
-            获取当前位置
-          </button>
         </section>
       </div>
 
       <DataSection
         kicker="MODEL REVIEW QUEUE"
-        title="模型识别审核"
-        description="模型输出将在人工确认物种与数量后进入数据库"
+        title="待审核"
+        description=""
       >
         <EmptyTable
           minWidth={980}
@@ -362,8 +376,8 @@ function LocalDetectionPanel() {
 
       <DataSection
         kicker="VERIFIED DATABASE"
-        title="已审核数据库记录"
-        description="确认后的物种、坐标与现场气象数据将在此归档"
+        title="检测记录"
+        description=""
       >
         <EmptyTable
           minWidth={1120}
@@ -385,15 +399,28 @@ function LocalDetectionPanel() {
   );
 }
 
-function SkeletonControl({
+function StreamControl({
   icon: Icon,
   label,
+  active = false,
+  disabled = false,
+  onClick,
 }: {
   icon: typeof Play;
   label: string;
+  active?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
 }) {
   return (
-    <button type="button" disabled aria-label={`${label}，功能待接入`}>
+    <button
+      type="button"
+      data-active={active || undefined}
+      disabled={disabled}
+      onClick={onClick}
+      aria-pressed={onClick ? active : undefined}
+      aria-label={disabled ? `${label}，请先开启推流` : label}
+    >
       <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
       <span>{label}</span>
     </button>

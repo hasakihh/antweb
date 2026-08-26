@@ -6,7 +6,7 @@
   --dashboard-rail-width: 352px;
   position: relative;
   min-height: 100svh;
-  overflow: hidden;
+  overflow: visible;
   isolation: isolate;
   color: var(--foreground);
   background:

@@ -79,13 +79,13 @@ export function AntTrendChart() {
       <div className="chart-frame">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={antCounts} margin={{ top: 12, right: 10, bottom: 4, left: -18 }}>
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.10)" strokeDasharray="3 6" />
+            <CartesianGrid vertical={false} stroke="var(--trend-grid)" strokeDasharray="3 6" />
             <XAxis
               dataKey="date"
               axisLine={false}
               tickLine={false}
               interval={1}
-              tick={{ fill: "#848484", fontSize: 10 }}
+              tick={{ fill: "var(--trend-tick)", fontSize: 10 }}
               dy={9}
             />
             <YAxis
@@ -94,43 +94,43 @@ export function AntTrendChart() {
               ticks={[0, 40, 80, 120, 160]}
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#848484", fontSize: 10 }}
-              label={{ value: "数量 / 只", angle: -90, position: "insideLeft", fill: "#6f6f6f", fontSize: 9 }}
+              tick={{ fill: "var(--trend-tick)", fontSize: 10 }}
+              label={{ value: "数量 / 只", angle: -90, position: "insideLeft", fill: "var(--trend-axis-label)", fontSize: 9 }}
             />
             <Tooltip
-              cursor={{ stroke: "rgba(255,255,255,0.22)", strokeDasharray: "3 4" }}
+              cursor={{ stroke: "var(--trend-cursor)", strokeDasharray: "3 4" }}
               contentStyle={{
-                background: "#111111",
-                border: "1px solid rgba(255,255,255,0.16)",
+                background: "var(--trend-tooltip-bg)",
+                border: "1px solid var(--trend-tooltip-border)",
                 borderRadius: 4,
-                color: "#f2f2ed",
+                color: "var(--trend-tooltip-text)",
                 fontSize: 11,
               }}
-              labelStyle={{ color: "#9b9b96", marginBottom: 4 }}
+              labelStyle={{ color: "var(--trend-tooltip-label)", marginBottom: 4 }}
               formatter={(value) => [`${value} 只`, "小火蚁"]}
             />
             <Line
               className="trend-line"
               type="monotone"
               dataKey="count"
-              stroke="#f2f2ed"
+              stroke="var(--trend-line)"
               strokeWidth={2}
               dot={false}
-              activeDot={{ r: 4, fill: "#090909", stroke: "#ffffff", strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: "var(--trend-marker-fill)", stroke: "var(--trend-marker-stroke)", strokeWidth: 2 }}
               isAnimationActive
               animationDuration={900}
             />
             <ReferenceLine
               x={activeSample.date}
-              stroke="rgba(255,255,255,0.24)"
+              stroke="var(--trend-reference)"
               strokeDasharray="3 5"
             />
             <ReferenceDot
               x={activeSample.date}
               y={activeSample.count}
               r={5}
-              fill="#090909"
-              stroke="#ffffff"
+              fill="var(--trend-marker-fill)"
+              stroke="var(--trend-marker-stroke)"
               strokeWidth={2}
             />
           </LineChart>

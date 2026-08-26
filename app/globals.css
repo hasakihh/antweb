@@ -240,6 +240,19 @@ input:focus-visible {
 }
 
 .monitor-page {
+  --trend-grid: rgba(255, 255, 255, 0.1);
+  --trend-tick: #848484;
+  --trend-axis-label: #6f6f6f;
+  --trend-line: #f2f2ed;
+  --trend-cursor: rgba(255, 255, 255, 0.22);
+  --trend-reference: rgba(255, 255, 255, 0.24);
+  --trend-marker-fill: #090909;
+  --trend-marker-stroke: #ffffff;
+  --trend-tooltip-bg: #111111;
+  --trend-tooltip-border: rgba(255, 255, 255, 0.16);
+  --trend-tooltip-text: #f2f2ed;
+  --trend-tooltip-label: #9b9b96;
+  --trend-line-glow: rgba(255, 255, 255, 0.18);
   position: relative;
   display: grid;
   min-height: 100svh;
@@ -623,7 +636,7 @@ input:focus-visible {
 }
 
 .chart-frame .recharts-line-curve {
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.18));
+  filter: drop-shadow(0 0 4px var(--trend-line-glow));
 }
 
 .chart-axis-caption {
@@ -705,8 +718,12 @@ input:focus-visible {
   opacity: 1;
   filter:
     grayscale(0)
-    drop-shadow(0 0 5px #e31414)
-    drop-shadow(0 0 12px #7c0202);
+    drop-shadow(0 0 4px rgba(204, 36, 25, 0.72))
+    drop-shadow(0 0 11px rgba(159, 19, 13, 0.48));
+}
+
+.route-ant-two img {
+  filter: sepia(0.72) saturate(4.8) hue-rotate(326deg) contrast(1.18) brightness(0.82);
 }
 
 .route-ant-three {
@@ -1277,4 +1294,154 @@ input:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* The entry page uses a white-line blueprint asset and dark-mode-specific
+   controls. Give the warm-light theme an intentional technical treatment so
+   the same hierarchy remains readable instead of fading into the paper tone. */
+:root[data-theme="warm-light"] .monitor-page {
+  --trend-grid: rgba(46, 46, 46, 0.16);
+  --trend-tick: #5e5a52;
+  --trend-axis-label: #4f4b45;
+  --trend-line: #2e2e2e;
+  --trend-cursor: rgba(46, 46, 46, 0.3);
+  --trend-reference: rgba(46, 46, 46, 0.28);
+  --trend-marker-fill: #f4efe4;
+  --trend-marker-stroke: #2e2e2e;
+  --trend-tooltip-bg: rgba(244, 239, 228, 0.98);
+  --trend-tooltip-border: rgba(46, 46, 46, 0.22);
+  --trend-tooltip-text: #1e1e1e;
+  --trend-tooltip-label: #5e5a52;
+  --trend-line-glow: rgba(46, 46, 46, 0.2);
+  background: var(--background);
+}
+
+:root[data-theme="warm-light"] .monitor-page::before {
+  background: rgba(46, 46, 46, 0.12);
+}
+
+:root[data-theme="warm-light"] .system-state > span {
+  box-shadow: 0 0 0 5px rgba(46, 46, 46, 0.08);
+}
+
+:root[data-theme="warm-light"] .entry-point h1 {
+  color: var(--foreground);
+  text-shadow: 0 0 24px rgba(46, 46, 46, 0.08);
+}
+
+:root[data-theme="warm-light"] .get-started-button {
+  color: #f7f2e8;
+  background: #2e2e2e;
+  border-color: #2e2e2e;
+}
+
+:root[data-theme="warm-light"] .get-started-button:hover {
+  color: #2e2e2e;
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(46, 46, 46, 0.48);
+}
+
+:root[data-theme="warm-light"] .blueprint-image {
+  opacity: 0.58;
+  filter: grayscale(1) invert(1) contrast(0.84) brightness(0.74) blur(0.15px);
+}
+
+:root[data-theme="warm-light"] .blueprint-focus {
+  border-color: rgba(46, 46, 46, 0.34);
+  box-shadow: 0 0 0 8px rgba(46, 46, 46, 0.045);
+}
+
+:root[data-theme="warm-light"] .track-haze {
+  stroke: rgba(46, 46, 46, 0.11);
+}
+
+:root[data-theme="warm-light"] .track-edge {
+  stroke: rgba(46, 46, 46, 0.18);
+}
+
+:root[data-theme="warm-light"] .track-edge-top {
+  stroke: rgba(46, 46, 46, 0.27);
+}
+
+:root[data-theme="warm-light"] .track-center {
+  stroke: rgba(46, 46, 46, 0.22);
+}
+
+:root[data-theme="warm-light"] .route-ant {
+  filter: grayscale(1) drop-shadow(0 0 6px rgba(46, 46, 46, 0.17));
+}
+
+:root[data-theme="warm-light"] .route-ant-two {
+  filter:
+    grayscale(0)
+    drop-shadow(0 0 4px rgba(204, 36, 25, 0.72))
+    drop-shadow(0 0 11px rgba(159, 19, 13, 0.48));
+}
+
+:root[data-theme="warm-light"] .route-ant-two img {
+  filter: sepia(0.72) saturate(4.8) hue-rotate(326deg) contrast(1.18) brightness(0.82);
+}
+
+:root[data-theme="warm-light"] .login-overlay {
+  background: rgba(233, 228, 216, 0.62);
+}
+
+:root[data-theme="warm-light"] .login-dialog {
+  color: #1e1e1e;
+  background: rgba(244, 239, 228, 0.9);
+  border-color: rgba(46, 46, 46, 0.18);
+  box-shadow: 0 30px 100px rgba(77, 68, 54, 0.2);
+}
+
+:root[data-theme="warm-light"] .dialog-close {
+  color: #5e5a52;
+  background: rgba(255, 255, 255, 0.46);
+  border-color: rgba(46, 46, 46, 0.14);
+}
+
+:root[data-theme="warm-light"] .dialog-close:hover {
+  color: #1e1e1e;
+  border-color: rgba(46, 46, 46, 0.32);
+}
+
+:root[data-theme="warm-light"] .field-group label,
+:root[data-theme="warm-light"] .password-label-row button {
+  color: #2e2e2e;
+}
+
+:root[data-theme="warm-light"] .field-group input {
+  color: #1e1e1e;
+  caret-color: #1e1e1e;
+  background: rgba(255, 255, 255, 0.68);
+  border-color: rgba(46, 46, 46, 0.18);
+}
+
+:root[data-theme="warm-light"] .field-group input:focus {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(46, 46, 46, 0.52);
+}
+
+:root[data-theme="warm-light"] .field-group input::placeholder {
+  color: #777168;
+}
+
+:root[data-theme="warm-light"] .password-toggle {
+  color: #5e5a52;
+  border-left-color: rgba(46, 46, 46, 0.14);
+}
+
+:root[data-theme="warm-light"] .password-toggle:hover {
+  color: #1e1e1e;
+}
+
+:root[data-theme="warm-light"] .submit-button {
+  color: #f7f2e8;
+  background: #2e2e2e;
+  border-color: #2e2e2e;
+}
+
+:root[data-theme="warm-light"] .submit-button:hover:not(:disabled) {
+  color: #2e2e2e;
+  background: transparent;
+  border-color: rgba(46, 46, 46, 0.48);
 }

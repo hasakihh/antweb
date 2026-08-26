@@ -6,7 +6,7 @@
   --monitor-surface: color-mix(in srgb, var(--card) 74%, transparent);
   --monitor-soft: color-mix(in srgb, var(--foreground) 4%, transparent);
   height: calc(100svh - 142px);
-  padding: 16px 4px 44px 2px;
+  padding: 4px 4px 44px 2px;
   overflow-y: auto;
   scrollbar-color: var(--monitor-line-strong) transparent;
   scrollbar-width: thin;
@@ -15,14 +15,14 @@
 
 .modeBar {
   display: flex;
-  min-height: 50px;
+  min-height: 40px;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
 }
 
 .modeBar > p {
-  margin: 10px 0 0;
+  margin: 7px 0 0;
   color: var(--monitor-copy);
   font-size: 11px;
   font-weight: 470;
@@ -30,8 +30,8 @@
 
 .modeTabs {
   display: inline-flex;
-  gap: 4px;
-  padding: 4px;
+  gap: 3px;
+  padding: 3px;
   background: var(--monitor-soft);
   border: 1px solid var(--monitor-line);
   border-radius: var(--monitor-radius);
@@ -39,12 +39,12 @@
 
 .modeTabs button {
   display: inline-flex;
-  min-width: 126px;
-  min-height: 36px;
+  min-width: 100px;
+  min-height: 30px;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 0 13px;
+  padding: 0 11px;
   color: var(--monitor-copy);
   background: transparent;
   border: 0;
@@ -85,15 +85,29 @@
 
 .videoStage {
   position: relative;
+  width: min(100%, 1120px);
   aspect-ratio: 16 / 9;
-  max-height: min(58vh, 620px);
-  min-height: 390px;
+  max-height: min(68vh, 680px);
+  min-height: 430px;
+  margin: 14px auto 0;
   overflow: hidden;
   background: #050506;
-  border: 1px solid var(--monitor-line);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--monitor-radius);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.025) inset;
   outline: 0;
   isolation: isolate;
+}
+
+.videoStage::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 28%, transparent 64%, rgba(0, 0, 0, 0.4));
+  pointer-events: none;
 }
 
 .videoStage:focus-visible {
@@ -184,11 +198,11 @@
   left: 18px;
   display: grid;
   min-width: 224px;
-  min-height: 54px;
+  min-height: 44px;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 4px 10px;
   color: rgba(242, 242, 237, 0.9);
   background: rgba(6, 6, 7, 0.64);
   border: 1px solid rgba(255, 255, 255, 0.11);
@@ -244,63 +258,42 @@
   white-space: nowrap;
 }
 
-.controlHint {
-  position: absolute;
-  z-index: 3;
-  right: 18px;
-  bottom: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: rgba(242, 242, 237, 0.46);
-  font-size: 9px;
-  transition: opacity 180ms ease;
-}
-
-.controlHint span {
-  width: 20px;
-  height: 1px;
-  background: rgba(242, 242, 237, 0.32);
-}
-
 .playerControls {
   position: absolute;
   z-index: 5;
-  right: 16px;
-  bottom: 16px;
-  left: 16px;
+  bottom: 14px;
+  left: 50%;
   display: grid;
-  min-height: 62px;
+  width: min(calc(100% - 32px), 590px);
+  min-height: 40px;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 18px;
-  padding: 9px 12px;
+  gap: 12px;
+  padding: 5px 8px;
   color: rgba(242, 242, 237, 0.88);
-  background: rgba(7, 7, 8, 0.78);
+  background: rgba(12, 12, 13, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--monitor-radius);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(20px) saturate(0.78);
+  filter: blur(8px);
   opacity: 0;
-  transform: translateY(12px);
+  transform: translate(-50%, 16px);
   pointer-events: none;
-  transition: opacity 200ms ease 420ms,
-    transform 260ms cubic-bezier(0.16, 1, 0.3, 1) 420ms;
+  transition:
+    opacity 280ms ease 420ms,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1) 420ms,
+    filter 360ms ease 420ms;
 }
 
 .videoStage:hover .playerControls,
 .videoStage:focus-within .playerControls,
 .videoStage:focus .playerControls {
+  filter: blur(0);
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
   pointer-events: auto;
   transition-delay: 0ms;
-}
-
-.videoStage:hover .controlHint,
-.videoStage:focus-within .controlHint,
-.videoStage:focus .controlHint {
-  opacity: 0;
 }
 
 .controlStatus {
@@ -316,21 +309,34 @@
   display: flex;
   min-width: 0;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .controlButtons button {
   display: inline-flex;
-  min-height: 40px;
+  min-height: 25px;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 0 12px;
+  padding: 0 10px;
   color: rgba(242, 242, 237, 0.76);
   background: rgba(255, 255, 255, 0.055);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 12px;
   font-size: 10px;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.controlButtons button:hover:not(:disabled) {
+  color: #080808;
+  background: rgba(246, 246, 241, 0.92);
+  transform: translateY(-1px);
+}
+
+.controlButtons button[data-active] {
+  color: #080808;
+  background: rgba(246, 246, 241, 0.94);
+  border-color: rgba(255, 255, 255, 0.52);
 }
 
 .controlButtons button:disabled,
@@ -344,7 +350,7 @@
 }
 
 .pendingLabel {
-  padding: 5px 7px;
+  padding: 3px 6px;
   color: rgba(242, 242, 237, 0.44);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9px;
@@ -560,15 +566,11 @@
   flex-direction: column;
 }
 
-.coordinatePanel .sectionIntro > svg {
-  margin-top: 4px;
-  color: var(--chart-3);
-}
-
 .coordinateReadout {
   display: grid;
-  gap: 10px;
-  margin-top: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .coordinateReadout label {
@@ -599,7 +601,7 @@
   align-items: center;
   gap: 10px;
   padding: 14px 0;
-  margin-top: 16px;
+  margin-top: 10px;
   border-top: 1px solid var(--monitor-line);
 }
 
@@ -625,6 +627,19 @@
   margin-top: auto;
 }
 
+.mapLoading {
+  display: grid;
+  min-height: 178px;
+  margin-top: 14px;
+  place-items: center;
+  color: var(--monitor-copy);
+  background: var(--monitor-soft);
+  border: 1px solid var(--monitor-line);
+  border-radius: var(--monitor-radius);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+}
+
 @keyframes scan {
   0%,
   100% {
@@ -646,7 +661,7 @@
 
 @media (max-width: 1080px) {
   .videoStage {
-    min-height: 340px;
+    min-height: 380px;
   }
 
   .controlButtons button span {
@@ -714,8 +729,8 @@
     top: 5px;
     left: 5px;
     min-width: 188px;
-    min-height: 46px;
-    padding: 6px 9px;
+    min-height: 40px;
+    padding: 3px 8px;
     transform: scale(0.52);
     transform-origin: top left;
   }
@@ -738,7 +753,6 @@
   }
 
   .playerControls {
-    right: auto;
     bottom: 4px;
     left: 4px;
     width: calc(200% - 16px);
@@ -755,10 +769,6 @@
   .videoStage:focus-within .playerControls,
   .videoStage:focus .playerControls {
     transform: scale(0.5);
-  }
-
-  .controlHint {
-    display: none;
   }
 
   .controlButtons {
@@ -833,8 +843,7 @@
     gap: 3px;
   }
 
-  .sectionIntro > span,
-  .coordinatePanel .sectionIntro > svg {
+  .sectionIntro > span {
     display: none;
   }
 
@@ -883,7 +892,8 @@
   }
 
   .coordinateReadout {
-    gap: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px;
     margin-top: 7px;
   }
 
@@ -927,13 +937,10 @@
 
 @media (hover: none) {
   .playerControls {
+    filter: blur(0);
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
     pointer-events: auto;
-  }
-
-  .controlHint {
-    display: none;
   }
 }
 
@@ -959,8 +966,8 @@
 
   .videoStage {
     width: 100%;
-    min-height: 390px;
-    max-height: min(58vh, 620px);
+    min-height: 430px;
+    max-height: min(68vh, 680px);
   }
 
   .frameCorners {
@@ -971,8 +978,8 @@
     top: 18px;
     left: 18px;
     min-width: 224px;
-    min-height: 54px;
-    padding: 8px 12px;
+    min-height: 44px;
+    padding: 4px 10px;
     transform: none;
   }
 
@@ -997,24 +1004,24 @@
   .videoStage:hover .playerControls,
   .videoStage:focus-within .playerControls,
   .videoStage:focus .playerControls {
-    right: 16px;
     bottom: 16px;
-    left: 16px;
-    width: auto;
-    min-height: 62px;
-    gap: 18px;
-    padding: 9px 12px;
+    left: 50%;
+    width: min(calc(100% - 32px), 590px);
+    min-height: 48px;
+    gap: 12px;
+    padding: 5px 8px;
+    filter: blur(0);
     opacity: 1;
-    transform: none;
+    transform: translate(-50%, 0);
   }
 
   .controlButtons {
-    gap: 6px;
+    gap: 5px;
   }
 
   .controlButtons button {
-    width: 44px;
-    min-height: 44px;
+    width: 34px;
+    min-height: 34px;
   }
 
   .controlStatus {
@@ -1077,10 +1084,6 @@
     gap: 18px;
   }
 
-  .coordinatePanel .sectionIntro > svg {
-    display: block;
-  }
-
   .dropZone {
     min-height: 238px;
     gap: 8px;
@@ -1129,8 +1132,9 @@
   }
 
   .coordinateReadout {
-    gap: 10px;
-    margin-top: 22px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
   }
 
   .coordinateReadout label {
@@ -1178,8 +1182,7 @@
     animation: none;
   }
 
-  .playerControls,
-  .controlHint {
+  .playerControls {
     transition: none;
   }
 }

@@ -1,0 +1,853 @@
+.canvasViewport {
+  --risk-line: color-mix(in srgb, var(--foreground) 11%, transparent);
+  --risk-line-strong: color-mix(in srgb, var(--foreground) 18%, transparent);
+  --risk-surface: linear-gradient(145deg, color-mix(in srgb, var(--card) 88%, transparent), color-mix(in srgb, var(--background) 94%, var(--card)));
+  width: 100%;
+  min-width: 0;
+}
+
+.canvas {
+  display: grid;
+  width: 100%;
+  gap: 18px;
+  padding: 16px 0 28px;
+  color: var(--foreground);
+}
+
+.eyebrow {
+  display: block;
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  font-weight: 560;
+  line-height: 1.4;
+}
+
+.statusLead {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 1px 4px 12px;
+  border-bottom: 1px solid var(--risk-line);
+}
+
+.statusCopy strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 18px;
+  font-weight: 520;
+}
+
+.statusCopy p,
+.cardHeading p,
+.sourceCard p,
+.predictionMetric p,
+.modelBreakdown p {
+  margin: 5px 0 0;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 470;
+  line-height: 1.5;
+}
+
+.riskState {
+  display: grid;
+  min-width: 232px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--chart-1) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chart-1) 32%, transparent);
+  border-radius: 16px;
+}
+
+.riskState > span {
+  width: 8px;
+  height: 8px;
+  background: var(--chart-1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--chart-1) 13%, transparent);
+}
+
+.riskState div {
+  display: grid;
+  gap: 2px;
+}
+
+.riskState small {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.riskState strong {
+  font-size: 13px;
+  font-weight: 560;
+}
+
+.riskState b {
+  color: var(--chart-1);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 23px;
+  font-weight: 560;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--risk-surface);
+  border: 1px solid var(--risk-line);
+  border-radius: 16px;
+  box-shadow: inset 0 1px color-mix(in srgb, var(--foreground) 4%, transparent), 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.cardHeading,
+.detailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cardHeading h2,
+.sectionHeading h2,
+.detailHeader h2,
+.aiTitle h2 {
+  margin: 5px 0 0;
+  font-size: 18px;
+  font-weight: 540;
+  line-height: 1.2;
+}
+
+.trendCard {
+  padding: 22px 24px 18px;
+}
+
+.trendCard::after {
+  position: absolute;
+  top: 0;
+  right: 12%;
+  width: 260px;
+  height: 110px;
+  content: "";
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--chart-2) 7%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.cardActions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardActions button,
+.rangeTabs button,
+.datePicker button,
+.detailTabs button {
+  color: var(--muted-foreground);
+  background: transparent;
+  border: 1px solid var(--risk-line-strong);
+  font: inherit;
+}
+
+.cardActions button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 520;
+}
+
+.cardActions button:hover:not(:disabled) {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
+}
+
+.cardActions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.refreshState {
+  margin-right: 4px;
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.spinning {
+  animation: spin 700ms linear infinite;
+}
+
+.trendSummary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 21px;
+  border-top: 1px solid var(--risk-line);
+  border-bottom: 1px solid var(--risk-line);
+}
+
+.summaryMetric {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 5px;
+  padding: 14px 15px;
+  border-right: 1px solid var(--risk-line);
+}
+
+.summaryMetric:last-child {
+  border-right: 0;
+}
+
+.summaryMetric > span {
+  grid-column: 1 / -1;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-weight: 520;
+}
+
+.summaryMetric strong {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 25px;
+  font-weight: 520;
+}
+
+.summaryMetric small {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.summaryMetric[data-tone="amber"] strong {
+  color: var(--chart-1);
+}
+
+.summaryMetric[data-tone="red"] strong {
+  color: var(--destructive);
+}
+
+.trendChart {
+  width: 100%;
+  height: 285px;
+  margin-top: 12px;
+}
+
+.chartLegend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 16px 2px 45px;
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.chartLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.chartLegend i {
+  width: 16px;
+  height: 2px;
+  background: var(--chart-2);
+}
+
+.chartLegend i[data-tone="forecast"] {
+  background: repeating-linear-gradient(90deg, var(--chart-1) 0 5px, transparent 5px 8px);
+}
+
+.forecastBoundary {
+  margin-left: auto;
+}
+
+.analysisSection {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 9px 3px 0;
+}
+
+.rangeTabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  border: 1px solid var(--risk-line);
+  border-radius: 13px;
+}
+
+.rangeTabs button {
+  min-width: 62px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-color: transparent;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 530;
+}
+
+.rangeTabs button:hover,
+.rangeTabs .activeRange {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.sourceCard {
+  display: grid;
+  min-height: 70px;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+}
+
+.sourceIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--chart-2);
+  background: color-mix(in srgb, var(--chart-2) 9%, transparent);
+  border-radius: 12px;
+}
+
+.sourceCard strong {
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.sourceCard p {
+  margin-top: 3px;
+}
+
+.sourceMeta {
+  display: grid;
+  gap: 3px;
+  padding-left: 18px;
+  border-left: 1px solid var(--risk-line);
+}
+
+.sourceMeta span,
+.simulationBadge {
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 560;
+}
+
+.simulationBadge {
+  padding: 6px 8px;
+  color: var(--chart-1);
+  background: color-mix(in srgb, var(--chart-1) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chart-1) 24%, transparent);
+  border-radius: 8px;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.predictionMetric {
+  min-height: 116px;
+  padding: 15px 16px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--card) 78%, transparent), color-mix(in srgb, var(--background) 96%, var(--card)));
+  border: 1px solid var(--risk-line);
+  border-radius: 16px;
+  box-shadow: inset 0 1px color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+.predictionMetric > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-foreground);
+}
+
+.predictionMetric > div span {
+  font-size: 10px;
+  font-weight: 530;
+}
+
+.predictionMetric > strong {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 23px;
+  font-weight: 530;
+}
+
+.predictionMetric > strong small {
+  margin-left: 5px;
+  color: var(--muted-foreground);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 10px;
+}
+
+.predictionMetric[data-tone="risk"] > strong,
+.predictionMetric[data-tone="risk"] svg {
+  color: var(--chart-1);
+}
+
+.interpretationCard {
+  padding: 22px 24px 24px;
+}
+
+.interpretationCard > .cardHeading > svg {
+  color: var(--chart-2);
+}
+
+.interpretationStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 20px;
+  border-top: 1px solid var(--risk-line);
+  border-bottom: 1px solid var(--risk-line);
+}
+
+.interpretationStats > div {
+  display: grid;
+  gap: 8px;
+  padding: 14px 15px;
+  border-right: 1px solid var(--risk-line);
+}
+
+.interpretationStats > div:last-child {
+  border-right: 0;
+}
+
+.interpretationStats span,
+.driverLabel,
+.selectedDaySummary span {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 520;
+}
+
+.interpretationStats strong {
+  font-size: 12px;
+  font-weight: 560;
+}
+
+.driverSummary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--risk-line);
+}
+
+.driverSummary > div {
+  padding: 16px 15px;
+}
+
+.driverSummary > div + div {
+  border-left: 1px solid var(--risk-line);
+}
+
+.driverLabel {
+  color: var(--chart-1);
+}
+
+.driverLabel[data-tone="decrease"] {
+  color: var(--chart-2);
+}
+
+.driverSummary p {
+  margin: 7px 0 0;
+  font-size: 11px;
+  font-weight: 470;
+  line-height: 1.65;
+}
+
+.factorExplorer {
+  padding-top: 18px;
+}
+
+.factorHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.factorHeader > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.factorHeader strong,
+.tableHeader strong {
+  font-size: 12px;
+  font-weight: 570;
+}
+
+.factorHeader > div:first-child span,
+.tableHeader span {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.datePicker {
+  display: flex;
+  max-width: 58%;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.datePicker button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 9px;
+  border-radius: 9px;
+  font-size: 9px;
+}
+
+.datePicker button:hover,
+.datePicker .activeDate {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.selectedDaySummary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 16px;
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  border-radius: 12px;
+}
+
+.selectedDaySummary > div {
+  display: grid;
+  gap: 5px;
+  padding: 11px 13px;
+  border-right: 1px solid var(--risk-line);
+}
+
+.selectedDaySummary > div:last-child {
+  border-right: 0;
+}
+
+.selectedDaySummary strong {
+  font-size: 11px;
+  font-weight: 560;
+}
+
+.factorGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px 20px;
+  margin-top: 17px;
+}
+
+.factorItem > div,
+.probability > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.factorItem span,
+.probability span {
+  color: var(--muted-foreground);
+  font-size: 9px;
+  font-weight: 510;
+}
+
+.factorItem b,
+.probability b {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  font-weight: 570;
+}
+
+.factorItem b[data-direction="increase"] {
+  color: var(--chart-1);
+}
+
+.factorItem b[data-direction="decrease"] {
+  color: var(--chart-2);
+}
+
+.factorItem > i,
+.probability > i {
+  display: block;
+  height: 3px;
+  margin-top: 6px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  border-radius: 3px;
+}
+
+.factorItem > i span,
+.probability > i span {
+  display: block;
+  height: 100%;
+  background: var(--chart-1);
+}
+
+.factorItem > i span[data-direction="decrease"] {
+  background: var(--chart-2);
+}
+
+.aiExplanation {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 24px;
+  padding: 20px 24px;
+  background: linear-gradient(105deg, color-mix(in srgb, var(--chart-2) 13%, var(--card)), color-mix(in srgb, #aaa0dc 12%, var(--background)));
+  border: 1px solid color-mix(in srgb, var(--chart-2) 24%, transparent);
+  border-radius: 16px;
+}
+
+.aiTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.aiTitle svg {
+  margin-top: 3px;
+  color: var(--chart-2);
+}
+
+.aiColumns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.aiColumns > div {
+  padding: 1px 17px;
+  border-left: 1px solid color-mix(in srgb, var(--foreground) 11%, transparent);
+}
+
+.aiColumns span {
+  font-size: 10px;
+  font-weight: 580;
+}
+
+.aiColumns p {
+  margin: 7px 0 0;
+  color: color-mix(in srgb, var(--foreground) 78%, var(--muted-foreground));
+  font-size: 11px;
+  font-weight: 470;
+  line-height: 1.65;
+}
+
+.detailCard {
+  padding: 22px 24px 18px;
+}
+
+.detailHeader {
+  align-items: flex-end;
+}
+
+.detailTabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  border-radius: 12px;
+}
+
+.detailTabs button {
+  display: flex;
+  min-height: 35px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-color: transparent;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 530;
+}
+
+.detailTabs small {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 7px;
+}
+
+.detailTabs button:hover,
+.detailTabs .activeDetailTab {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.detailPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 22px;
+  margin-top: 18px;
+  padding: 18px 0;
+  border-top: 1px solid var(--risk-line);
+  border-bottom: 1px solid var(--risk-line);
+}
+
+.detailChart {
+  min-width: 0;
+  height: 270px;
+}
+
+.modelBreakdown {
+  padding: 13px 0 8px 20px;
+  border-left: 1px solid var(--risk-line);
+}
+
+.modelBreakdown > strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--chart-1);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 30px;
+  font-weight: 520;
+}
+
+.probabilityList {
+  display: grid;
+  gap: 13px;
+  margin-top: 22px;
+}
+
+.probability > i span {
+  background: var(--chart-2);
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px 2px 10px;
+}
+
+.tableScroller {
+  overflow-x: auto;
+  border: 1px solid var(--risk-line);
+  border-radius: 12px;
+  scrollbar-color: var(--muted-foreground) transparent;
+  scrollbar-width: thin;
+}
+
+.tableScroller table {
+  width: 100%;
+  min-width: 840px;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.tableScroller th,
+.tableScroller td {
+  height: 43px;
+  padding: 0 13px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--risk-line);
+}
+
+.tableScroller th {
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  font-size: 9px;
+  font-weight: 570;
+}
+
+.tableScroller td {
+  color: color-mix(in srgb, var(--foreground) 82%, var(--muted-foreground));
+  font-weight: 480;
+}
+
+.tableScroller tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tableScroller tbody tr:hover td {
+  background: color-mix(in srgb, var(--foreground) 2%, transparent);
+}
+
+.tableScroller td strong {
+  color: var(--foreground);
+  font-weight: 590;
+}
+
+.riskPill {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--chart-1);
+  background: color-mix(in srgb, var(--chart-1) 8%, transparent);
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 570;
+}
+
+.riskPill[data-level="high"] {
+  color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 8%, transparent);
+}
+
+.riskPill[data-level="medium"] {
+  color: var(--chart-2);
+  background: color-mix(in srgb, var(--chart-2) 8%, transparent);
+}
+
+.cardActions button:focus-visible,
+.rangeTabs button:focus-visible,
+.datePicker button:focus-visible,
+.detailTabs button:focus-visible,
+.tableScroller:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1180px) {
+  .refreshState { display: none; }
+  .trendCard, .interpretationCard, .detailCard { padding-right: 18px; padding-left: 18px; }
+  .detailTabs button { padding: 0 9px; }
+  .aiExplanation { grid-template-columns: 165px 1fr; }
+}
+
+@media (max-width: 767px) {
+  .canvasViewport {
+    position: relative;
+    height: var(--risk-canvas-height);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .canvas {
+    width: 920px;
+    transform: scale(var(--risk-canvas-scale));
+    transform-origin: top left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinning { animation: none; }
+  .cardActions button, .rangeTabs button, .datePicker button, .detailTabs button { transition: none; }
+}

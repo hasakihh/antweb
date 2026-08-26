@@ -234,7 +234,6 @@ export function DashboardOverviewBoard() {
     {
       id: "environment-reading",
       title: "环境温湿度",
-      description: "监测点当前环境读数",
       icon: <Thermometer size={17} strokeWidth={1.6} />,
       status: "稳定",
       tone: "cyan",
@@ -259,7 +258,6 @@ export function DashboardOverviewBoard() {
     {
       id: "ant-capture-count",
       title: "诱集数量",
-      description: "今日监测装置累计记录",
       icon: <Bug size={17} strokeWidth={1.6} />,
       status: "今日",
       tone: "amber",
@@ -281,7 +279,7 @@ export function DashboardOverviewBoard() {
     {
       id: "risk-evaluation",
       title: "风险评判",
-      description: "综合诱集密度与环境条件",
+
       icon: <ShieldAlert size={17} strokeWidth={1.6} />,
       status: "需关注",
       tone: "green",

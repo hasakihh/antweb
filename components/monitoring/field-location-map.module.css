@@ -1,0 +1,98 @@
+.mapFrame {
+  position: relative;
+  min-height: 178px;
+  margin-top: 14px;
+  overflow: hidden;
+  background: var(--background);
+  border: 1px solid var(--monitor-line);
+  border-radius: 16px;
+  isolation: isolate;
+}
+
+.mapRoot {
+  width: 100%;
+  height: 100%;
+  min-height: 178px;
+  background: var(--background);
+  font-family: var(--font-geist-sans), "Microsoft YaHei UI", sans-serif;
+}
+
+.mapRoot :global(.leaflet-tile-pane) {
+  filter: grayscale(1) invert(0.9) brightness(0.42) contrast(1.15);
+}
+
+:global(:root[data-theme="warm-light"]) .mapRoot :global(.leaflet-tile-pane) {
+  filter: grayscale(1) sepia(0.08) brightness(1.02) contrast(0.88);
+}
+
+.mapRoot :global(.leaflet-control-attribution) {
+  padding: 2px 5px;
+  color: rgba(242, 242, 237, 0.48);
+  background: rgba(8, 8, 8, 0.64);
+  font-size: 7px;
+  backdrop-filter: blur(8px);
+}
+
+.mapRoot :global(.leaflet-control-attribution a) {
+  color: inherit;
+}
+
+:global(:root[data-theme="warm-light"]) .mapRoot :global(.leaflet-control-attribution) {
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--card) 84%, transparent);
+}
+
+.mapInstruction,
+.locateButton {
+  position: absolute;
+  z-index: 500;
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 7px;
+  color: rgba(245, 245, 240, 0.86);
+  background: rgba(8, 8, 9, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+  font-size: 9px;
+}
+
+.mapInstruction {
+  top: 10px;
+  left: 10px;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.locateButton {
+  right: 10px;
+  bottom: 10px;
+  min-height: 36px;
+  padding: 0 11px;
+  cursor: pointer;
+}
+
+.locateButton:hover:not(:disabled) {
+  color: #080808;
+  background: rgba(245, 245, 240, 0.94);
+}
+
+.locateButton:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+:global(:root[data-theme="warm-light"]) .mapInstruction,
+:global(:root[data-theme="warm-light"]) .locateButton {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  border-color: var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapRoot :global(.leaflet-zoom-animated) {
+    transition: none !important;
+  }
+}
