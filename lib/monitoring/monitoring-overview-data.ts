@@ -21,6 +21,19 @@ export interface MonitoringOverview {
   trendData: Record<MonitoringRange, readonly MonitoringTrendPoint[]>;
 }
 
+export const landingTrendData = [
+  { date: "08/01", count: 34 },
+  { date: "08/02", count: 48 },
+  { date: "08/03", count: 42 },
+  { date: "08/04", count: 71 },
+  { date: "08/05", count: 64 },
+  { date: "08/06", count: 92 },
+  { date: "08/07", count: 78 },
+  { date: "08/08", count: 113 },
+  { date: "08/09", count: 101 },
+  { date: "08/10", count: 126 },
+] as const;
+
 export const monitoringTrendData: Record<MonitoringRange, readonly MonitoringTrendPoint[]> = {
   day: [
     { label: "00:00", antCount: 18, temperature: 24.1, humidity: 77 },

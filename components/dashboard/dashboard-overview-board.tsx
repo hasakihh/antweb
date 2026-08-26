@@ -239,7 +239,7 @@ export function DashboardOverviewBoard() {
             <span>指数 {overview.riskScore} / 100</span>
           </div>
           <div className={classes.riskScale} aria-label={`风险指数 ${overview.riskScore}，共 100`}>
-            <i />
+            <i style={{ width: `${overview.riskScore}%` }} />
           </div>
           <small>诱集密度接近预警阈值</small>
         </div>
@@ -542,7 +542,7 @@ export function DashboardOverviewBoard() {
                 <strong>{overview.riskScore >= 65 ? "中高风险" : "中风险"}</strong>
                 <small>综合指数 {overview.riskScore} / 100</small>
                 <div className={classes.riskScale} aria-label={`风险指数 ${overview.riskScore}，共 100`}>
-                  <i />
+                  <i style={{ width: `${overview.riskScore}%` }} />
                 </div>
               </div>
 

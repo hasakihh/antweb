@@ -13,12 +13,9 @@ import {
   YAxis,
 } from "recharts";
 
-import { defaultMonitoringOverview } from "@/lib/monitoring/monitoring-overview-data";
+import { landingTrendData } from "@/lib/monitoring/monitoring-overview-data";
 
-const antCounts = defaultMonitoringOverview.trendData.month.map((point) => ({
-  date: point.label,
-  count: point.antCount,
-}));
+const antCounts = landingTrendData;
 
 export function AntTrendChart() {
   const [activeIndex, setActiveIndex] = useState(5);
