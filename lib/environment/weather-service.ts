@@ -1,9 +1,9 @@
 import type {
   ForecastRange,
-  WeatherCondition,
   WeatherForecast,
   WeatherForecastDay,
 } from "@/lib/environment/types";
+import { mockWeatherConditions } from "@/lib/environment/mock-weather-data";
 
 export const DEFAULT_WEATHER_LOCATION = "广东省广州市从化区";
 
@@ -14,44 +14,6 @@ export interface WeatherForecastProvider {
   ): Promise<WeatherForecast>;
 }
 
-const conditions: Array<{
-  condition: WeatherCondition;
-  label: string;
-  humidity: number;
-  precipitation: number;
-}> = [
-  {
-    condition: "partly-cloudy",
-    label: "多云间晴",
-    humidity: 72,
-    precipitation: 20,
-  },
-  {
-    condition: "light-rain",
-    label: "短时阵雨",
-    humidity: 79,
-    precipitation: 55,
-  },
-  {
-    condition: "cloudy",
-    label: "阴转多云",
-    humidity: 75,
-    precipitation: 30,
-  },
-  {
-    condition: "sunny",
-    label: "晴",
-    humidity: 66,
-    precipitation: 10,
-  },
-  {
-    condition: "moderate-rain",
-    label: "中雨",
-    humidity: 84,
-    precipitation: 72,
-  },
-];
-
 function dateKey(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -60,7 +22,7 @@ function dateKey(date: Date) {
 }
 
 function createMockForecastDay(index: number, date: Date): WeatherForecastDay {
-  const weather = conditions[index % conditions.length];
+  const weather = mockWeatherConditions[index % mockWeatherConditions.length];
   const temperatureOffset = [0, -1, 1, 2, -2][index % 5];
 
   return {
@@ -116,4 +78,3 @@ export async function getWeatherForecast(
 ) {
   return getWeatherForecastProvider().getForecast(location, range);
 }
-
