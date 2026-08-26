@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { defaultMonitoringOverview } from "@/lib/monitoring/monitoring-overview-data";
 import styles from "./v0-ai-chat.module.css";
 
 interface UseAutoResizeTextareaProps {
@@ -117,12 +118,23 @@ function getCurrentTime() {
 }
 
 function createMockResponse(prompt: string) {
+  const {
+    antCount,
+    antCountDelta,
+    humidity,
+    humidityDelta,
+    latestRecordedAt,
+    riskScore,
+    temperature,
+    temperatureDelta,
+  } = defaultMonitoringOverview;
+
   if (prompt.includes("风险") || prompt.includes("爆发")) {
-    return "当前监测区域综合风险为中风险。今日诱集数量为 126 只，较昨日同期增加 18 只；温度 26.4°C、相对湿度 71%，环境条件有利于小火蚁活动。建议优先复核诱集量增长最快的监测点。";
+    return `当前监测区域综合风险为${riskScore >= 65 ? "中高风险" : "中风险"}。今日诱集数量为 ${antCount} 只，较昨日同期增加 ${antCountDelta} 只；温度 ${temperature}°C、相对湿度 ${humidity}%，环境条件有利于小火蚁活动。建议优先复核诱集量增长最快的监测点。`;
   }
 
   if (prompt.includes("环境") || prompt.includes("温湿度")) {
-    return "当前监测区域温度为 26.4°C，相对湿度为 71%。过去一小时温度上升 0.6°C、湿度下降 2%，各监测点数据传输正常。";
+    return `当前监测区域温度为 ${temperature}°C，相对湿度为 ${humidity}%。过去一小时温度上升 ${temperatureDelta ?? 0}°C、湿度变化 ${humidityDelta ?? 0}%，各监测点数据传输正常。`;
   }
 
   if (prompt.includes("摄像头") || prompt.includes("画面")) {
@@ -130,7 +142,7 @@ function createMockResponse(prompt: string) {
   }
 
   if (prompt.includes("诱集") || prompt.includes("汇总")) {
-    return "当前监测区域今日累计诱集 126 只，最近一次记录时间为 21:00，较昨日同期增加 18 只。田间东侧的增长最明显，建议继续观察夜间变化。";
+    return `当前监测区域今日累计诱集 ${antCount} 只，最近一次记录时间为 ${latestRecordedAt}，较昨日同期增加 ${antCountDelta} 只。田间东侧的增长最明显，建议继续观察夜间变化。`;
   }
 
   return `已收到关于“${prompt}”的请求。当前页面使用模拟监测数据，后续接入 AI 与设备服务后，可在这里返回实时分析结果。`;

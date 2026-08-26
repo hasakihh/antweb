@@ -30,7 +30,6 @@ import {
 } from "recharts";
 import {
   detailTabs,
-  historicalPoints,
   modelFactors,
   predictionRanges,
   type DetailTab,
@@ -79,6 +78,7 @@ export function RiskAnalysisWorkspace() {
     highestRiskPoint,
     peakPoint,
     selectedPoint,
+    summary,
   } = useMemo(
     () => buildRiskAnalysisView(range, selectedDate),
     [range, selectedDate],
@@ -171,11 +171,11 @@ export function RiskAnalysisWorkspace() {
           </div>
 
           <div className={styles.trendSummary}>
-            <SummaryMetric label="有效记录" value="126" unit="条" />
-            <SummaryMetric label="平均数量" value="109" unit="只 / 次" />
-            <SummaryMetric label="最高数量" value="126" unit="只" />
-            <SummaryMetric label="高密度" value="18" unit="次" tone="amber" />
-            <SummaryMetric label="快速增长" value="6" unit="次" tone="red" />
+            <SummaryMetric label="有效记录" value={String(summary.effectiveRecords)} unit="条" />
+            <SummaryMetric label="平均数量" value={String(summary.averageCount)} unit="只 / 次" />
+            <SummaryMetric label="最高数量" value={String(summary.highestCount)} unit="只" />
+            <SummaryMetric label="高密度" value={String(summary.highDensityCount)} unit="次" tone="amber" />
+            <SummaryMetric label="快速增长" value={String(summary.rapidGrowthCount)} unit="次" tone="red" />
           </div>
 
           <div className={styles.trendChart}>
@@ -243,7 +243,7 @@ export function RiskAnalysisWorkspace() {
             <PredictionMetric icon={ShieldAlert} label="最高风险" value={riskLabel(highestRiskPoint.risk)} meta={highestRiskPoint.date} tone="risk" />
             <PredictionMetric icon={Gauge} label="最大风险概率" value={`${highestRiskPoint.risk}%`} meta={`未来 ${range} 天`} />
             <PredictionMetric icon={TrendingUp} label="数量峰值" value={`${peakPoint.predicted}`} unit="只" meta={peakPoint.date} />
-            <PredictionMetric icon={CalendarDays} label="训练数据截止" value="08/13" meta="2026 · 已校验" />
+            <PredictionMetric icon={CalendarDays} label="训练数据截止" value={summary.trainingCutoff} meta="2026 · 已校验" />
           </div>
         </section>
 
@@ -259,9 +259,9 @@ export function RiskAnalysisWorkspace() {
 
           <div className={styles.interpretationStats}>
             <div><span>周期趋势结论</span><strong>持续上升后高位波动</strong></div>
-            <div><span>数量净变化</span><strong>+{visibleForecast.at(-1)!.predicted - historicalPoints.at(-1)!.actual!} 只</strong></div>
+            <div><span>数量净变化</span><strong>+{summary.netChange} 只</strong></div>
             <div><span>风险峰值</span><strong>{highestRiskPoint.date} · {highestRiskPoint.risk}%</strong></div>
-            <div><span>预测区间变化</span><strong>±9 → ±{peakPoint.upper - peakPoint.predicted} 只</strong></div>
+            <div><span>预测区间变化</span><strong>±9 → ±{summary.intervalChange} 只</strong></div>
           </div>
 
           <div className={styles.driverSummary}>
