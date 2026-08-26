@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, KeyboardEvent } from "react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   BrainCircuit,
   CalendarDays,
@@ -44,6 +44,7 @@ import {
   riskLabel,
   riskLevel,
 } from "@/components/risk-analysis/risk-analysis-model";
+import { useResponsiveCanvas } from "@/components/layout/use-responsive-canvas";
 import styles from "./risk-analysis-workspace.module.css";
 
 type CanvasStyle = CSSProperties & {
@@ -68,11 +69,9 @@ export function RiskAnalysisWorkspace() {
   const [selectedDate, setSelectedDate] = useState("2026-08-19");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshLabel, setRefreshLabel] = useState("模型更新于 21:00");
-  const [canvasScale, setCanvasScale] = useState(1);
-  const [canvasHeight, setCanvasHeight] = useState(0);
-  const canvasViewportRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const { canvasHeight, canvasRef, canvasScale, canvasViewportRef } =
+    useResponsiveCanvas(MOBILE_CANVAS_WIDTH, `${range}:${detailTab}`);
 
   const {
     visibleForecast,
@@ -84,32 +83,6 @@ export function RiskAnalysisWorkspace() {
     () => buildRiskAnalysisView(range, selectedDate),
     [range, selectedDate],
   );
-
-  useLayoutEffect(() => {
-    const viewport = canvasViewportRef.current;
-    const canvas = canvasRef.current;
-    if (!viewport || !canvas) return;
-
-    const updateCanvas = () => {
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      const nextScale = isMobile
-        ? Math.min(1, viewport.clientWidth / MOBILE_CANVAS_WIDTH)
-        : 1;
-
-      setCanvasScale(nextScale);
-      setCanvasHeight(isMobile ? canvas.scrollHeight * nextScale : 0);
-    };
-
-    const observer = new ResizeObserver(updateCanvas);
-    observer.observe(viewport);
-    observer.observe(canvas);
-    const frame = window.requestAnimationFrame(updateCanvas);
-
-    return () => {
-      observer.disconnect();
-      window.cancelAnimationFrame(frame);
-    };
-  }, [range, detailTab]);
 
   function updateRange(nextRange: PredictionRange) {
     setRange(nextRange);

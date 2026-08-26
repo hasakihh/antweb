@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   ScanSearch,
   Video,
@@ -9,6 +9,7 @@ import {
 import { LiveMonitoringPanel } from "@/components/monitoring/live-monitoring-panel";
 import { LocalDetectionPanel } from "@/components/monitoring/local-detection-panel";
 import type { MonitoringMode } from "@/components/monitoring/monitoring-types";
+import { useResponsiveCanvas } from "@/components/layout/use-responsive-canvas";
 import styles from "./monitoring-workspace.module.css";
 
 const modes: ReadonlyArray<{
@@ -30,37 +31,9 @@ const MOBILE_CANVAS_WIDTH = 860;
 
 export function MonitoringWorkspace() {
   const [mode, setMode] = useState<MonitoringMode>("live");
-  const [canvasScale, setCanvasScale] = useState(1);
-  const [canvasHeight, setCanvasHeight] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const canvasViewportRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    const viewport = canvasViewportRef.current;
-    const canvas = canvasRef.current;
-    if (!viewport || !canvas) return;
-
-    const updateCanvas = () => {
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      const nextScale = isMobile
-        ? Math.min(1, viewport.clientWidth / MOBILE_CANVAS_WIDTH)
-        : 1;
-
-      setCanvasScale(nextScale);
-      setCanvasHeight(isMobile ? canvas.scrollHeight * nextScale : 0);
-    };
-
-    const observer = new ResizeObserver(updateCanvas);
-    observer.observe(viewport);
-    observer.observe(canvas);
-    const updateFrame = window.requestAnimationFrame(updateCanvas);
-
-    return () => {
-      observer.disconnect();
-      window.cancelAnimationFrame(updateFrame);
-    };
-  }, [mode]);
+  const { canvasHeight, canvasRef, canvasScale, canvasViewportRef } =
+    useResponsiveCanvas(MOBILE_CANVAS_WIDTH, mode);
 
   function selectMode(nextMode: MonitoringMode) {
     setMode(nextMode);
