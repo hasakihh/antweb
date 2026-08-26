@@ -1,4 +1,6 @@
 import { getWeatherForecast } from "@/lib/environment/weather-service";
+import { isWeatherForecast } from "@/lib/environment/environment-contract";
+import { errorMessage, jsonError } from "@/lib/http/route-response";
 import type { ForecastRange } from "@/lib/environment/types";
 
 const supportedRanges = new Set<ForecastRange>([3, 7, 15]);
@@ -9,21 +11,24 @@ export async function GET(request: Request) {
   const requestedRange = Number(searchParams.get("days") ?? 7);
 
   if (!location) {
-    return Response.json({ error: "请输入监测地点" }, { status: 400 });
+    return jsonError("请输入监测地点", 400);
   }
 
   if (!supportedRanges.has(requestedRange as ForecastRange)) {
-    return Response.json(
-      { error: "仅支持 3、7 或 15 日预报" },
-      { status: 400 },
-    );
+    return jsonError("仅支持 3、7 或 15 日预报", 400);
   }
 
-  const forecast = await getWeatherForecast(
-    location,
-    requestedRange as ForecastRange,
-  );
+  try {
+    const forecast = await getWeatherForecast(
+      location,
+      requestedRange as ForecastRange,
+    );
+    if (!isWeatherForecast(forecast)) {
+      return jsonError("天气预报数据格式无效", 502);
+    }
 
-  return Response.json({ forecast });
+    return Response.json({ forecast });
+  } catch (error) {
+    return jsonError(errorMessage(error, "天气预报更新失败"));
+  }
 }
-
