@@ -4,12 +4,8 @@ import { useEffect, useState } from "react";
 import { CircleMarker, MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { LocateFixed, MapPin } from "lucide-react";
 import "leaflet/dist/leaflet.css";
+import type { FieldLocation } from "@/components/monitoring/monitoring-types";
 import styles from "./field-location-map.module.css";
-
-export interface FieldLocation {
-  latitude: number;
-  longitude: number;
-}
 
 interface FieldLocationMapProps {
   value: FieldLocation | null;

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Camera, CircleStop, Download, Play } from "lucide-react";
 import {
   MonitoringDataSection,
@@ -9,9 +8,17 @@ import {
 import type { StreamStatus } from "@/components/monitoring/monitoring-types";
 import styles from "./monitoring-workspace.module.css";
 
-export function LiveMonitoringPanel() {
-  const streamStatus: StreamStatus = "offline";
-  const [isStreaming, setIsStreaming] = useState(false);
+export function LiveMonitoringPanel({
+  isStreaming,
+  streamStatus,
+  onStartStreaming,
+  onStopStreaming,
+}: {
+  isStreaming: boolean;
+  streamStatus: StreamStatus;
+  onStartStreaming: () => void;
+  onStopStreaming: () => void;
+}) {
 
   return (
     <section
@@ -49,13 +56,13 @@ export function LiveMonitoringPanel() {
             <StreamControl
               icon={Play}
               label="开启推流"
-              onClick={() => setIsStreaming(true)}
+              onClick={onStartStreaming}
               active={isStreaming}
             />
             <StreamControl
               icon={CircleStop}
               label="关闭推流"
-              onClick={() => setIsStreaming(false)}
+              onClick={onStopStreaming}
               active={!isStreaming}
             />
             <StreamControl icon={Camera} label="截取当前帧" disabled={!isStreaming} />

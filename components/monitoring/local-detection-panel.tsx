@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import dynamic from "next/dynamic";
 import { ImagePlus, ScanSearch, Upload } from "lucide-react";
 import {
   MonitoringDataSection,
   MonitoringEmptyTable,
 } from "@/components/monitoring/monitoring-data-section";
-import type { FieldLocation } from "@/components/monitoring/field-location-map";
+import type { FieldLocation } from "@/components/monitoring/monitoring-types";
 import styles from "./monitoring-workspace.module.css";
 
 const FieldLocationMap = dynamic(
@@ -21,8 +20,13 @@ const FieldLocationMap = dynamic(
   },
 );
 
-export function LocalDetectionPanel() {
-  const [fieldLocation, setFieldLocation] = useState<FieldLocation | null>(null);
+export function LocalDetectionPanel({
+  fieldLocation,
+  onFieldLocationChange,
+}: {
+  fieldLocation: FieldLocation | null;
+  onFieldLocationChange: (location: FieldLocation) => void;
+}) {
 
   const longitude = fieldLocation?.longitude.toFixed(6) ?? "--.------";
   const latitude = fieldLocation?.latitude.toFixed(6) ?? "--.------";
@@ -77,7 +81,7 @@ export function LocalDetectionPanel() {
             <span>点击地图选择坐标</span>
           </div>
 
-          <FieldLocationMap value={fieldLocation} onChange={setFieldLocation} />
+          <FieldLocationMap value={fieldLocation} onChange={onFieldLocationChange} />
 
           <div className={styles.coordinateReadout}>
             <label>

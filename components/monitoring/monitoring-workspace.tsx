@@ -9,6 +9,7 @@ import {
 import { LiveMonitoringPanel } from "@/components/monitoring/live-monitoring-panel";
 import { LocalDetectionPanel } from "@/components/monitoring/local-detection-panel";
 import type { MonitoringMode } from "@/components/monitoring/monitoring-types";
+import { useMonitoringSession } from "@/components/monitoring/monitoring-session";
 import { useResponsiveCanvas } from "@/components/layout/use-responsive-canvas";
 import styles from "./monitoring-workspace.module.css";
 
@@ -32,6 +33,7 @@ const MOBILE_CANVAS_WIDTH = 860;
 export function MonitoringWorkspace() {
   const [mode, setMode] = useState<MonitoringMode>("live");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const monitoringSession = useMonitoringSession();
   const { canvasHeight, canvasRef, canvasScale, canvasViewportRef } =
     useResponsiveCanvas(MOBILE_CANVAS_WIDTH, mode);
 
@@ -110,7 +112,19 @@ export function MonitoringWorkspace() {
         }
       >
         <div ref={canvasRef} className={styles.canvas}>
-          {mode === "live" ? <LiveMonitoringPanel /> : <LocalDetectionPanel />}
+          {mode === "live" ? (
+            <LiveMonitoringPanel
+              isStreaming={monitoringSession.isStreaming}
+              streamStatus={monitoringSession.streamStatus}
+              onStartStreaming={monitoringSession.startStreaming}
+              onStopStreaming={monitoringSession.stopStreaming}
+            />
+          ) : (
+            <LocalDetectionPanel
+              fieldLocation={monitoringSession.fieldLocation}
+              onFieldLocationChange={monitoringSession.setFieldLocation}
+            />
+          )}
         </div>
       </div>
     </div>
