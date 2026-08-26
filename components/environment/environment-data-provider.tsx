@@ -5,9 +5,11 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import { refreshEnvironmentSnapshot } from "@/lib/environment/environment-data-client";
 import type { EnvironmentSnapshot } from "@/lib/environment/types";
 
 interface EnvironmentDataContextValue {
@@ -31,32 +33,26 @@ export function EnvironmentDataProvider({
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const refreshInFlightRef = useRef(false);
 
   const refresh = useCallback(async () => {
-    if (isRefreshing) return;
+    if (refreshInFlightRef.current) return;
 
+    refreshInFlightRef.current = true;
     setIsRefreshing(true);
     setRefreshError(null);
 
     try {
-      const response = await fetch("/api/environment/observations", {
-        cache: "no-store",
-      });
-
-      if (!response.ok) throw new Error("环境数据同步失败");
-
-      const payload = (await response.json()) as {
-        snapshot: EnvironmentSnapshot;
-      };
-      setSnapshot(payload.snapshot);
+      setSnapshot(await refreshEnvironmentSnapshot());
     } catch (error) {
       setRefreshError(
         error instanceof Error ? error.message : "环境数据同步失败",
       );
     } finally {
+      refreshInFlightRef.current = false;
       setIsRefreshing(false);
     }
-  }, [isRefreshing]);
+  }, []);
 
   const value = useMemo(
     () => ({ snapshot, isRefreshing, refreshError, refresh }),
@@ -79,4 +75,3 @@ export function useEnvironmentData() {
   }
   return context;
 }
-

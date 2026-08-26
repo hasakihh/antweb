@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -19,6 +19,7 @@ import {
   Wind,
 } from "lucide-react";
 import { useEnvironmentData } from "@/components/environment/environment-data-provider";
+import { loadWeatherForecast } from "@/lib/environment/environment-data-client";
 import type {
   FieldObservation,
   ForecastRange,
@@ -128,6 +129,7 @@ export function EnvironmentWorkspace({
   const [sortDirection, setSortDirection] =
     useState<SortDirection>("descending");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const forecastRequestInFlightRef = useRef(false);
 
   const visibleObservations = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("zh-CN");
@@ -147,36 +149,22 @@ export function EnvironmentWorkspace({
     nextRange: ForecastRange,
     nextLocation: string,
   ) {
-    const normalizedLocation = nextLocation.trim();
-    if (!normalizedLocation || isForecastLoading) return;
+    if (forecastRequestInFlightRef.current) return;
 
+    forecastRequestInFlightRef.current = true;
     setIsForecastLoading(true);
     setForecastError(null);
 
     try {
-      const response = await fetch(
-        `/api/weather/forecast?location=${encodeURIComponent(
-          normalizedLocation,
-        )}&days=${nextRange}`,
-        { cache: "no-store" },
-      );
-
-      const payload = (await response.json()) as {
-        forecast?: WeatherForecast;
-        error?: string;
-      };
-
-      if (!response.ok || !payload.forecast) {
-        throw new Error(payload.error ?? "天气预报更新失败");
-      }
-
-      setForecast(payload.forecast);
-      setForecastRange(payload.forecast.range);
+      const nextForecast = await loadWeatherForecast(nextLocation, nextRange);
+      setForecast(nextForecast);
+      setForecastRange(nextForecast.range);
     } catch (error) {
       setForecastError(
         error instanceof Error ? error.message : "天气预报更新失败",
       );
     } finally {
+      forecastRequestInFlightRef.current = false;
       setIsForecastLoading(false);
     }
   }
