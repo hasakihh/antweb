@@ -1,6 +1,6 @@
 import { getWeatherForecast } from "@/lib/environment/weather-service";
 import { isWeatherForecast } from "@/lib/environment/environment-contract";
-import { errorMessage, jsonError } from "@/lib/http/route-response";
+import { jsonError } from "@/lib/http/route-response";
 import type { ForecastRange } from "@/lib/environment/types";
 
 const supportedRanges = new Set<ForecastRange>([3, 7, 15]);
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     }
 
     return Response.json({ forecast });
-  } catch (error) {
-    return jsonError(errorMessage(error, "天气预报更新失败"));
+  } catch {
+    return jsonError("天气预报更新失败");
   }
 }

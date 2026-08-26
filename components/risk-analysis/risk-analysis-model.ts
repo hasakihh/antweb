@@ -5,10 +5,26 @@ import {
   type PredictionRange,
 } from "@/components/risk-analysis/risk-analysis-data";
 
+const emptyForecastPoint: ForecastPoint = {
+  date: "--",
+  fullDate: "",
+  predicted: 0,
+  lower: 0,
+  upper: 0,
+  temperature: 0,
+  humidity: 0,
+  rainfall: 0,
+  pressure: 0,
+  risk: 0,
+  lag: 0,
+};
+
 function highestBy(
   points: ForecastPoint[],
   value: (point: ForecastPoint) => number,
 ) {
+  if (points.length === 0) return emptyForecastPoint;
+
   return points.reduce((highest, point) =>
     value(point) > value(highest) ? point : highest,
   );
@@ -24,6 +40,7 @@ export function buildRiskAnalysisView(
 
   return {
     visibleForecast,
+    hasForecast: visibleForecast.length > 0,
     trendData: [...historicalPoints, ...visibleForecast],
     highestRiskPoint,
     peakPoint,

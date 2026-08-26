@@ -1,5 +1,5 @@
 import { getEnvironmentSnapshot } from "@/lib/environment/environment-repository";
-import { errorMessage, jsonError } from "@/lib/http/route-response";
+import { jsonError } from "@/lib/http/route-response";
 import { isEnvironmentSnapshot } from "@/lib/environment/environment-contract";
 
 export async function GET() {
@@ -9,7 +9,7 @@ export async function GET() {
       return jsonError("环境数据格式无效", 502);
     }
     return Response.json({ snapshot });
-  } catch (error) {
-    return jsonError(errorMessage(error, "环境数据同步失败"));
+  } catch {
+    return jsonError("环境数据同步失败");
   }
 }

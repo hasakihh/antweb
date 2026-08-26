@@ -17,7 +17,7 @@ export function useMonitoringSession() {
 
   const state: MonitoringSessionState = {
     streamStatus,
-    isStreaming: streamStatus !== "offline",
+    isStreaming: streamStatus === "connecting" || streamStatus === "online",
     fieldLocation,
   };
 
