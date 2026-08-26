@@ -1,42 +1,20 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import {
+  DEFAULT_APP_THEME,
+  THEME_STORAGE_KEY,
+  isAppTheme,
+  themeColorScheme,
+  type AppTheme,
+} from "@/components/theme/theme-config";
 
-export const THEME_STORAGE_KEY = "ant-vigil-theme";
-
-export const APP_THEMES = [
-  {
-    id: "midnight",
-    label: "深夜监测",
-    englishLabel: "MIDNIGHT",
-    description: "现有黑灰监测界面",
-  },
-  {
-    id: "warm-light",
-    label: "暖纸日间",
-    englishLabel: "WARM PAPER",
-    description: "柔和纸色与炭黑文字",
-  },
-  {
-    id: "warm-dark",
-    label: "暖纸夜间",
-    englishLabel: "WARM NIGHT",
-    description: "暖灰黑底与米白文字",
-  },
-] as const;
-
-export type AppTheme = (typeof APP_THEMES)[number]["id"];
-
-const themeIds = new Set<AppTheme>(APP_THEMES.map((theme) => theme.id));
+export { APP_THEMES, THEME_STORAGE_KEY, type AppTheme } from "@/components/theme/theme-config";
 const themeChangeEvent = "ant-vigil-theme-change";
-
-export function isAppTheme(value: string | undefined): value is AppTheme {
-  return value !== undefined && themeIds.has(value as AppTheme);
-}
 
 function getThemeSnapshot(): AppTheme {
   const theme = document.documentElement.dataset.theme;
-  return isAppTheme(theme) ? theme : "midnight";
+  return isAppTheme(theme) ? theme : DEFAULT_APP_THEME;
 }
 
 function subscribeToTheme(onStoreChange: () => void) {
@@ -55,8 +33,7 @@ function subscribeToTheme(onStoreChange: () => void) {
 
 export function setAppTheme(theme: AppTheme) {
   document.documentElement.dataset.theme = theme;
-  document.documentElement.style.colorScheme =
-    theme === "warm-light" ? "light" : "dark";
+  document.documentElement.style.colorScheme = themeColorScheme(theme);
 
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
@@ -71,6 +48,6 @@ export function useAppTheme() {
   return useSyncExternalStore(
     subscribeToTheme,
     getThemeSnapshot,
-    () => "midnight",
+    () => DEFAULT_APP_THEME,
   );
 }

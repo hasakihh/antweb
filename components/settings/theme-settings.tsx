@@ -5,7 +5,6 @@ import {
   APP_THEMES,
   setAppTheme,
   useAppTheme,
-  type AppTheme,
 } from "@/components/theme/theme-store";
 import styles from "./theme-settings.module.css";
 
@@ -37,7 +36,7 @@ export function ThemeSettings() {
                 name="interface-theme"
                 value={theme.id}
                 checked={isActive}
-                onChange={() => setAppTheme(theme.id as AppTheme)}
+                onChange={() => setAppTheme(theme.id)}
               />
 
               <span className={styles.preview} aria-hidden="true">
