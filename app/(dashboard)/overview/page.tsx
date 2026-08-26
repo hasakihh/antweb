@@ -1,5 +1,5 @@
-import { VercelV0Chat } from "@/components/ui/v0-ai-chat";
+import { AiChatWorkbench } from "@/components/ai/ai-chat-workbench";
 
 export default function OverviewPage() {
-  return <VercelV0Chat />;
+  return <AiChatWorkbench />;
 }
