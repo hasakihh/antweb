@@ -1,7 +1,7 @@
 .workspace {
   position: fixed;
   z-index: 0;
-  inset: 0;
+  inset: 0 0 0 var(--dashboard-rail-width, 352px);
   overflow: hidden;
   background: #d1d4d2;
 }
@@ -58,7 +58,7 @@
   z-index: 12;
   top: 20px;
   right: 18px;
-  left: calc(var(--dashboard-rail-width, 352px) + 18px);
+  left: 18px;
   display: flex;
   min-height: 58px;
   align-items: center;
@@ -208,7 +208,7 @@
 }
 
 .leftDrawer {
-  left: calc(var(--dashboard-rail-width, 352px) + 18px);
+  left: 18px;
   transform: translateX(calc(-100% + 38px));
 }
 
@@ -373,7 +373,7 @@
   .controlBar {
     top: 10px;
     right: 10px;
-    left: calc(var(--dashboard-rail-width, 220px) + 10px);
+    left: 10px;
     min-height: 49px;
     gap: 8px;
     padding: 0 8px;
@@ -392,7 +392,7 @@
   .iconButton { width: 28px; }
 
   .drawer { top: 76px; bottom: 10px; width: min(310px, calc(100vw - 30px)); }
-  .leftDrawer { left: calc(var(--dashboard-rail-width, 220px) + 10px); }
+  .leftDrawer { left: 10px; }
   .rightDrawer { right: 10px; }
   .drawerPanel { padding: 17px 12px 14px; }
   .drawerHeading h2 { font-size: 15px; }

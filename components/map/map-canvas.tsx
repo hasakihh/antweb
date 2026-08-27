@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CircleMarker,
   MapContainer,
   Pane,
   Rectangle,
   TileLayer,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { MAP_PANES, MAP_PANE_Z_INDEX, TILE_LAYERS } from "@/lib/map/map-config";
@@ -18,6 +19,24 @@ interface MapCanvasProps {
   snapshot: MapSnapshot;
   showHeatmap: boolean;
   showRiskGrid: boolean;
+}
+
+function MapSizeSync() {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize({ animate: false });
+    });
+
+    observer.observe(container);
+    map.invalidateSize({ animate: false });
+
+    return () => observer.disconnect();
+  }, [map]);
+
+  return null;
 }
 
 export default function MapCanvas({
@@ -43,6 +62,7 @@ export default function MapCanvas({
       attributionControl
       aria-label="监测地图"
     >
+      <MapSizeSync />
       <Pane name={MAP_PANES.satellite} style={{ zIndex: MAP_PANE_Z_INDEX.satellite }}>
         <TileLayer
           key={baseTileUrl}
