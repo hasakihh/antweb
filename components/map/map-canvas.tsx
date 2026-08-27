@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import {
   CircleMarker,
   MapContainer,
+  Marker,
   Popup,
   Rectangle,
   TileLayer,
   useMap,
 } from "react-leaflet";
-import type { CircleMarker as LeafletCircleMarker, Rectangle as LeafletRectangle } from "leaflet";
+import { divIcon } from "leaflet";
+import type { Marker as LeafletMarker, Rectangle as LeafletRectangle } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MAP_PANES, MAP_PANE_Z_INDEX, TILE_LAYERS } from "@/lib/map/map-config";
 import { clampRiskRadius, formatCoordinate, formatMapTime, isValidCoordinate, riskColor } from "@/lib/map/map-utils";
@@ -68,6 +70,47 @@ function MapPaneSetup() {
   return null;
 }
 
+function deviceMarkerIcon(device: DeviceLocation, isSelected: boolean) {
+  const markerColor = device.status === "online" ? "#2e9bff" : "#e25352";
+  return divIcon({
+    className: styles.markerIconShell,
+    iconSize: [34, 40],
+    iconAnchor: [17, 38],
+    popupAnchor: [0, -35],
+    html: `
+      <span class="${styles.deviceMarkerIcon} ${isSelected ? styles.markerSelected : ""}" style="--marker-color:${markerColor}">
+        <svg viewBox="0 0 28 36" aria-hidden="true" focusable="false">
+          <path d="M14 1.5C7.65 1.5 2.5 6.58 2.5 12.85c0 7.44 11.5 20.18 11.5 20.18s11.5-12.74 11.5-20.18C25.5 6.58 20.35 1.5 14 1.5Z" />
+          <rect x="8" y="8" width="12" height="9" rx="2" />
+          <path d="M11 20.5h6M14 17v3.5" />
+          <circle cx="14" cy="12.5" r="1.8" />
+        </svg>
+      </span>
+    `,
+  });
+}
+
+function occurrenceMarkerIcon(occurrence: RiskOccurrence) {
+  const color = riskColor(occurrence.riskLevel);
+  const radius = clampRiskRadius(occurrence.detectionCount);
+  const size = Math.round(radius * 2 + 8);
+  return divIcon({
+    className: styles.markerIconShell,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -(size / 2 + 4)],
+    html: `
+      <span class="${styles.occurrenceMarkerIcon}" style="--marker-color:${color};--marker-size:${size}px">
+        <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path d="M14 1.5 26.5 14 14 26.5 1.5 14 14 1.5Z" />
+          <path d="M14 8v7" />
+          <circle cx="14" cy="19.5" r="1.2" />
+        </svg>
+      </span>
+    `,
+  });
+}
+
 function DeviceMarker({
   device,
   isSelected,
@@ -78,7 +121,7 @@ function DeviceMarker({
   onSelect: (deviceId: string) => void;
 }) {
   const map = useMap();
-  const markerRef = useRef<LeafletCircleMarker | null>(null);
+  const markerRef = useRef<LeafletMarker | null>(null);
   const coordinate = device.coordinate;
 
   useEffect(() => {
@@ -94,17 +137,11 @@ function DeviceMarker({
   if (!coordinate || !isValidCoordinate(coordinate)) return null;
 
   return (
-    <CircleMarker
+    <Marker
       ref={markerRef}
       pane={MAP_PANES.device}
-      center={[coordinate.latitude, coordinate.longitude]}
-      radius={isSelected ? 9 : 7}
-      pathOptions={{
-        color: "#f6f2e9",
-        fillColor: device.status === "online" ? "#2e9bff" : "#767d8a",
-        fillOpacity: 1,
-        weight: isSelected ? 4 : 3,
-      }}
+      position={[coordinate.latitude, coordinate.longitude]}
+      icon={deviceMarkerIcon(device, isSelected)}
       eventHandlers={{ click: () => onSelect(device.id) }}
     >
       <Popup className={styles.devicePopup} closeButton>
@@ -128,22 +165,16 @@ function DeviceMarker({
           </div>
         </div>
       </Popup>
-    </CircleMarker>
+    </Marker>
   );
 }
 
 function RiskOccurrenceMarker({ occurrence }: { occurrence: RiskOccurrence }) {
   return (
-    <CircleMarker
+    <Marker
       pane={MAP_PANES.riskPoint}
-      center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
-      radius={clampRiskRadius(occurrence.detectionCount)}
-      pathOptions={{
-        color: "rgba(8, 8, 8, 0.85)",
-        fillColor: riskColor(occurrence.riskLevel),
-        fillOpacity: 0.92,
-        weight: 2,
-      }}
+      position={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
+      icon={occurrenceMarkerIcon(occurrence)}
     >
       <Popup>
         <div className={styles.popupContent}>
@@ -162,7 +193,7 @@ function RiskOccurrenceMarker({ occurrence }: { occurrence: RiskOccurrence }) {
           </dl>
         </div>
       </Popup>
-    </CircleMarker>
+    </Marker>
   );
 }
 
@@ -292,8 +323,8 @@ export default function MapCanvas({
             center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
             radius={Math.min(40, 18 + occurrence.detectionCount)}
             pathOptions={{
-              color: "#f29f4b",
-              fillColor: "#f29f4b",
+              color: "#4aa3c7",
+              fillColor: "#4aa3c7",
               fillOpacity: 0.08,
               opacity: 0.04,
               weight: 10,

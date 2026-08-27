@@ -34,12 +34,14 @@
   color: var(--foreground);
   background: color-mix(in srgb, var(--card) 92%, transparent);
   border: 0;
+  font-size: 18px;
+  line-height: 32px;
 }
 
 .mapRoot :global(.leaflet-control-attribution) {
   color: var(--muted-foreground);
   background: color-mix(in srgb, var(--card) 82%, transparent);
-  font-size: 8px;
+  font-size: 10px;
   backdrop-filter: blur(8px);
 }
 
@@ -56,7 +58,7 @@
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .controlBar {
@@ -92,14 +94,14 @@
 }
 
 .brandBlock {
-  min-width: 210px;
-  gap: 10px;
+  min-width: 230px;
+  gap: 12px;
 }
 
 .brandIcon {
   display: grid;
-  width: 31px;
-  height: 31px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   color: var(--chart-2);
   background: color-mix(in srgb, var(--chart-2) 16%, transparent);
@@ -114,7 +116,7 @@
 }
 
 .brandBlock strong {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 650;
   white-space: nowrap;
 }
@@ -122,22 +124,22 @@
 .brandBlock span {
   color: var(--muted-foreground);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 8px;
+  font-size: 11px;
   white-space: nowrap;
 }
 
 .summaryStrip {
-  gap: 14px;
+  gap: 18px;
   color: var(--muted-foreground);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .summaryStrip b {
   margin-right: 3px;
   color: var(--foreground);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
 }
 
@@ -154,15 +156,15 @@
 .layerControls button,
 .iconButton {
   display: inline-flex;
-  min-height: 31px;
+  min-height: 36px;
   align-items: center;
   gap: 6px;
-  padding: 0 10px;
+  padding: 0 12px;
   color: var(--paper-soft);
   background: color-mix(in srgb, var(--foreground) 6%, transparent);
   border: 1px solid var(--line);
   border-radius: 9px;
-  font-size: 9px;
+  font-size: 12px;
   transition: color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
@@ -176,7 +178,7 @@
 .layerControls button:hover { transform: translateY(-1px); }
 
 .iconButton {
-  width: 31px;
+  width: 36px;
   justify-content: center;
   padding: 0;
 }
@@ -185,7 +187,7 @@
   gap: 8px;
   margin-right: 4px;
   color: var(--muted-foreground);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .riskLegend span {
@@ -195,14 +197,15 @@
 }
 
 .riskLegend i {
-  width: 17px;
-  height: 3px;
+  width: 19px;
+  height: 4px;
   border-radius: 3px;
 }
 
 .riskLegend i[data-level="low"] { background: #55b68b; }
 .riskLegend i[data-level="medium"] { background: #e2b84f; }
 .riskLegend i[data-level="high"] { background: #ef5b5b; }
+.riskLegend i[data-level="review"] { background: #a779d4; }
 
 .drawer {
   position: absolute;
@@ -238,17 +241,17 @@
   z-index: 2;
   top: 16px;
   display: inline-flex;
-  min-height: 36px;
+  min-height: 42px;
   align-items: center;
-  gap: 6px;
-  padding: 0 10px;
+  gap: 8px;
+  padding: 0 12px;
   color: var(--paper-soft);
   background: color-mix(in srgb, var(--card) 92%, transparent);
   border: 1px solid var(--line);
   border-radius: 10px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(18px);
-  font-size: 10px;
+  font-size: 12px;
   pointer-events: auto;
   white-space: nowrap;
 }
@@ -278,20 +281,20 @@
 }
 
 .drawerHeading > div { display: grid; gap: 3px; }
-.drawerHeading span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 8px; }
-.drawerHeading h2 { margin: 0; font-size: 17px; font-weight: 650; }
+.drawerHeading span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 10px; }
+.drawerHeading h2 { margin: 0; font-size: 20px; font-weight: 650; }
 .drawerHeading > svg { color: var(--chart-2); }
 
 .metricGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 7px;
+  gap: 8px;
   padding: 14px 0 17px;
 }
 
 .metricGrid > div {
   display: grid;
-  min-height: 66px;
+  min-height: 74px;
   place-content: center;
   gap: 4px;
   padding: 5px;
@@ -300,27 +303,27 @@
   text-align: center;
 }
 
-.metricGrid strong { font-size: 21px; font-weight: 500; }
-.metricGrid span { color: var(--muted-foreground); font-size: 8px; white-space: nowrap; }
+.metricGrid strong { font-size: 27px; font-weight: 500; }
+.metricGrid span { color: var(--muted-foreground); font-size: 11px; white-space: nowrap; }
 .metricGrid [data-tone="high"] strong { color: #e55355; }
 .metricGrid [data-tone="pending"] strong { color: #d69f39; }
 
 .alertHeader {
-  gap: 7px;
-  padding: 0 0 9px;
+  gap: 8px;
+  padding: 0 0 11px;
   color: var(--foreground);
   border-bottom: 1px solid var(--line);
 }
 
 .alertHeader svg { color: #e55355; }
-.alertHeader strong { font-size: 12px; font-weight: 650; }
+.alertHeader strong { font-size: 14px; font-weight: 650; }
 .alertList { display: grid; gap: 9px; padding-top: 10px; }
 
 .alertCard {
   display: grid;
   width: 100%;
-  gap: 6px;
-  padding: 12px 11px;
+  gap: 8px;
+  padding: 14px 13px;
   background: color-mix(in srgb, var(--card) 78%, var(--destructive) 4%);
   border-top: 1px solid transparent;
   border-right: 1px solid transparent;
@@ -340,16 +343,16 @@
   background: color-mix(in srgb, var(--card) 72%, var(--destructive) 10%);
 }
 
-.alertCard strong { color: #ef8585; font-size: 11px; line-height: 1.45; }
-.alertCard span { color: #d39a9a; font-size: 9px; }
-.alertCard small { color: #ef6d6d; font-family: var(--font-geist-mono), monospace; font-size: 8px; }
+.alertCard strong { color: var(--foreground); font-size: 14px; line-height: 1.45; }
+.alertCard span { color: var(--muted-foreground); font-size: 12px; }
+.alertCard small { color: #ef6d6d; font-family: var(--font-geist-mono), monospace; font-size: 10px; }
 
 .deviceList { display: grid; gap: 2px; padding-top: 5px; }
 .deviceItem { display: grid; gap: 0; }
 
 .deviceRow {
-  min-height: 65px;
-  gap: 10px;
+  min-height: 74px;
+  gap: 12px;
   padding: 0 3px;
   border-bottom: 1px solid var(--line);
 }
@@ -370,27 +373,27 @@
 .deviceSelectButton:hover .deviceCopy strong,
 .deviceSelectButton:focus-visible .deviceCopy strong { color: var(--chart-2); }
 .deviceCopy { min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.deviceCopy strong { overflow: hidden; color: var(--foreground); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-.deviceCopy span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 8px; }
-.deviceSelectButton em { padding: 3px 5px; color: var(--muted-foreground); background: color-mix(in srgb, var(--foreground) 8%, transparent); border-radius: 4px; font-size: 8px; font-style: normal; }
+.deviceCopy strong { overflow: hidden; color: var(--foreground); font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.deviceCopy span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 11px; }
+.deviceSelectButton em { padding: 4px 6px; color: var(--muted-foreground); background: color-mix(in srgb, var(--foreground) 8%, transparent); border-radius: 4px; font-size: 11px; font-style: normal; }
 .deviceSelected { background: color-mix(in srgb, var(--chart-2) 10%, transparent); border-radius: 8px; }
 .deviceSelected .deviceCopy strong { color: var(--chart-2); }
-.editButton { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; padding: 0; color: var(--muted-foreground); background: transparent; border: 1px solid transparent; border-radius: 7px; }
+.editButton { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; padding: 0; color: var(--muted-foreground); background: transparent; border: 1px solid transparent; border-radius: 7px; }
 .editButton:hover, .editButton:focus-visible { color: var(--chart-2); background: color-mix(in srgb, var(--foreground) 8%, transparent); border-color: var(--line); }
-.statusDot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04); }
+.statusDot { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04); }
 .statusOnline { background: #2e9bff; }
 .statusOffline { background: #e25352; }
 .coordinateForm { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px 4px 12px; border-bottom: 1px solid var(--line); }
 .coordinateForm label { display: grid; gap: 4px; }
-.coordinateForm label > span { color: var(--muted-foreground); font-size: 8px; }
-.coordinateForm input { width: 100%; height: 32px; padding: 0 8px; color: var(--foreground); background: color-mix(in srgb, var(--foreground) 5%, transparent); border: 1px solid var(--line); border-radius: 6px; font-family: var(--font-geist-mono), monospace; font-size: 9px; }
+.coordinateForm label > span { color: var(--muted-foreground); font-size: 10px; }
+.coordinateForm input { width: 100%; height: 34px; padding: 0 8px; color: var(--foreground); background: color-mix(in srgb, var(--foreground) 5%, transparent); border: 1px solid var(--line); border-radius: 6px; font-family: var(--font-geist-mono), monospace; font-size: 11px; }
 .coordinateForm input[aria-invalid="true"] { border-color: var(--destructive); }
-.coordinateForm label small { color: var(--destructive); font-size: 7px; line-height: 1.2; }
+.coordinateForm label small { color: var(--destructive); font-size: 9px; line-height: 1.2; }
 .formActions { display: flex; grid-column: 1 / -1; gap: 6px; }
-.formActions button { min-height: 28px; padding: 0 9px; color: var(--primary-foreground); background: var(--primary); border: 1px solid var(--primary); border-radius: 7px; font-size: 8px; }
+.formActions button { min-height: 32px; padding: 0 11px; color: var(--primary-foreground); background: var(--primary); border: 1px solid var(--primary); border-radius: 7px; font-size: 11px; }
 .formActions button + button { color: var(--paper-soft); background: transparent; border-color: var(--line); }
-.panelStatus { margin: 10px 0 0; padding: 8px; color: var(--chart-2); background: color-mix(in srgb, var(--chart-2) 9%, transparent); border: 1px solid color-mix(in srgb, var(--chart-2) 22%, transparent); border-radius: 7px; font-size: 8px; line-height: 1.4; }
-.panelHint { margin: 16px 0 0; color: var(--muted-foreground); font-size: 9px; line-height: 1.5; }
+.panelStatus { margin: 10px 0 0; padding: 9px; color: var(--chart-2); background: color-mix(in srgb, var(--chart-2) 9%, transparent); border: 1px solid color-mix(in srgb, var(--chart-2) 22%, transparent); border-radius: 7px; font-size: 11px; line-height: 1.4; }
+.panelHint { margin: 16px 0 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.5; }
 
 .mapBadge {
   position: absolute;
@@ -405,7 +408,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 8px;
+  font-size: 10px;
   backdrop-filter: blur(12px);
 }
 
@@ -420,26 +423,113 @@
 
 .mapRoot :global(.leaflet-popup-content) { margin: 12px 13px; }
 .mapRoot :global(.leaflet-popup-close-button) { color: var(--muted-foreground); }
-.popupContent { min-width: 232px; font-family: var(--font-geist-sans), "Microsoft YaHei UI", sans-serif; }
+.popupContent { min-width: 260px; font-family: var(--font-geist-sans), "Microsoft YaHei UI", sans-serif; }
 .popupHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
 .popupHeading > div { display: grid; gap: 3px; }
-.popupHeading span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 7px; }
-.popupHeading strong { color: var(--foreground); font-size: 13px; font-weight: 600; }
+.popupHeading span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 10px; }
+.popupHeading strong { color: var(--foreground); font-size: 17px; font-weight: 600; }
 .popupHeading i { width: 7px; height: 7px; margin-top: 6px; border-radius: 50%; }
 .riskPopupDot { flex: 0 0 7px; }
 .popupOnline { background: #2e9bff; }
 .popupOffline { background: #e25352; }
-.popupMeta { display: grid; gap: 6px; padding: 10px 0; margin: 0; }
+.popupMeta { display: grid; gap: 8px; padding: 12px 0; margin: 0; }
 .popupMeta > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.popupMeta dt { color: var(--muted-foreground); font-size: 8px; }
-.popupMeta dd { margin: 0; color: var(--paper-soft); font-family: var(--font-geist-mono), monospace; font-size: 8px; text-align: right; }
+.popupMeta dt { color: var(--muted-foreground); font-size: 11px; }
+.popupMeta dd { margin: 0; color: var(--paper-soft); font-family: var(--font-geist-mono), monospace; font-size: 11px; text-align: right; }
 .popupTrend { padding-top: 9px; border-top: 1px solid var(--line); }
-.popupTrend > span { color: var(--muted-foreground); font-size: 8px; }
-.trendChart { height: 54px; margin-top: 5px; color: var(--chart-2); }
+.popupTrend > span { color: var(--muted-foreground); font-size: 11px; }
+.trendChart { height: 60px; margin-top: 6px; color: var(--chart-2); }
 .trendChart svg { display: block; width: 100%; height: 36px; overflow: visible; }
-.trendLabels { display: flex; align-items: center; justify-content: space-between; color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 7px; }
-.trendLabels strong { color: var(--paper-soft); font-size: 8px; font-weight: 500; }
-.popupEmptyTrend { margin: 8px 0 0; color: var(--muted-foreground); font-size: 8px; }
+.trendLabels { display: flex; align-items: center; justify-content: space-between; color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 10px; }
+.trendLabels strong { color: var(--paper-soft); font-size: 11px; font-weight: 500; }
+.popupEmptyTrend { margin: 8px 0 0; color: var(--muted-foreground); font-size: 10px; }
+
+.markerIconShell {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.deviceMarkerIcon,
+.occurrenceMarkerIcon {
+  display: block;
+  filter: drop-shadow(0 4px 5px rgba(5, 12, 20, 0.38));
+}
+
+.deviceMarkerIcon {
+  width: 34px;
+  height: 40px;
+  transform-origin: 50% 100%;
+}
+
+.deviceMarkerIcon svg {
+  display: block;
+  width: 34px;
+  height: 40px;
+  overflow: visible;
+}
+
+.deviceMarkerIcon svg path:first-child {
+  fill: var(--marker-color);
+  stroke: rgba(255, 255, 255, 0.92);
+  stroke-width: 1.6;
+}
+
+.deviceMarkerIcon svg rect {
+  fill: rgba(8, 17, 27, 0.78);
+  stroke: rgba(255, 255, 255, 0.78);
+  stroke-width: 1;
+}
+
+.deviceMarkerIcon svg path:not(:first-child),
+.deviceMarkerIcon svg circle {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-linecap: round;
+  stroke-width: 1.3;
+}
+
+.deviceMarkerIcon svg circle {
+  fill: var(--marker-color);
+  stroke-width: 0;
+}
+
+.markerSelected {
+  transform: scale(1.16);
+  filter: drop-shadow(0 0 0.5px #fff) drop-shadow(0 5px 8px rgba(9, 111, 209, 0.65));
+}
+
+.occurrenceMarkerIcon {
+  width: var(--marker-size);
+  height: var(--marker-size);
+}
+
+.occurrenceMarkerIcon svg {
+  display: block;
+  width: var(--marker-size);
+  height: var(--marker-size);
+}
+
+.occurrenceMarkerIcon svg path:first-child {
+  fill: var(--marker-color);
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-width: 1.7;
+}
+
+.occurrenceMarkerIcon svg path:not(:first-child),
+.occurrenceMarkerIcon svg circle {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.98);
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.occurrenceMarkerIcon svg circle {
+  fill: #fff;
+  stroke-width: 0;
+}
 
 @media (max-width: 1180px) {
   .controlBar { gap: 10px; }
@@ -466,25 +556,25 @@
   }
 
   .brandBlock { min-width: 0; }
-  .brandIcon { width: 26px; height: 26px; flex: 0 0 26px; }
-  .brandIcon svg { width: 14px; height: 14px; }
-  .brandBlock strong { font-size: 11px; }
+  .brandIcon { width: 30px; height: 30px; flex: 0 0 30px; }
+  .brandIcon svg { width: 16px; height: 16px; }
+  .brandBlock strong { font-size: 13px; }
   .brandBlock span { display: none; }
   .summaryStrip { display: none; }
   .layerControls { gap: 4px; }
-  .layerControls button { min-height: 28px; padding: 0 6px; font-size: 8px; }
+  .layerControls button { min-height: 30px; padding: 0 7px; font-size: 10px; }
   .layerControls button svg { display: none; }
-  .iconButton { width: 28px; }
+  .iconButton { width: 30px; }
 
   .drawer { top: 76px; bottom: 10px; width: min(310px, calc(100vw - 30px)); }
   .leftDrawer { left: 10px; }
   .rightDrawer { right: 10px; }
   .drawerPanel { padding: 17px 12px 14px; }
-  .drawerHeading h2 { font-size: 15px; }
+  .drawerHeading h2 { font-size: 18px; }
   .metricGrid { gap: 4px; }
-  .metricGrid strong { font-size: 18px; }
-  .metricGrid span { font-size: 7px; }
-  .mapBadge { right: 10px; bottom: 10px; font-size: 7px; }
+  .metricGrid strong { font-size: 22px; }
+  .metricGrid span { font-size: 9px; }
+  .mapBadge { right: 10px; bottom: 10px; font-size: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

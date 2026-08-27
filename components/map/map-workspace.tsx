@@ -165,6 +165,7 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
             <span><i data-level="low" />低</span>
             <span><i data-level="medium" />中</span>
             <span><i data-level="high" />高</span>
+            <span><i data-level="review" />复查</span>
           </div>
           <button
             type="button"
