@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   CircleMarker,
   MapContainer,
-  Pane,
   Rectangle,
   TileLayer,
   useMap,
@@ -39,6 +38,28 @@ function MapSizeSync() {
   return null;
 }
 
+function MapPaneSetup() {
+  const map = useMap();
+
+  useEffect(() => {
+    const panes = [
+      [MAP_PANES.satellite, MAP_PANE_Z_INDEX.satellite],
+      [MAP_PANES.labels, MAP_PANE_Z_INDEX.labels],
+      [MAP_PANES.heatmap, MAP_PANE_Z_INDEX.heatmap],
+      [MAP_PANES.riskGrid, MAP_PANE_Z_INDEX.riskGrid],
+      [MAP_PANES.riskPoint, MAP_PANE_Z_INDEX.riskPoint],
+      [MAP_PANES.device, MAP_PANE_Z_INDEX.device],
+    ] as const;
+
+    panes.forEach(([name, zIndex]) => {
+      const pane = map.getPane(name) ?? map.createPane(name);
+      pane.style.zIndex = String(zIndex);
+    });
+  }, [map]);
+
+  return null;
+}
+
 export default function MapCanvas({
   snapshot,
   showHeatmap,
@@ -63,109 +84,104 @@ export default function MapCanvas({
       aria-label="监测地图"
     >
       <MapSizeSync />
-      <Pane name={MAP_PANES.satellite} style={{ zIndex: MAP_PANE_Z_INDEX.satellite }}>
-        <TileLayer
-          key={baseTileUrl}
-          url={baseTileUrl}
-          subdomains={
-            isFallback
-              ? [...TILE_LAYERS.fallback.subdomains]
-              : [...TILE_LAYERS.satellite.subdomains]
-          }
-          attribution={
-            isFallback ? TILE_LAYERS.fallback.attribution : TILE_LAYERS.satellite.attribution
-          }
-          eventHandlers={{
-            tileerror: () => {
-              if (!isFallback) {
-                setIsFallback(true);
-                setBaseTileUrl(TILE_LAYERS.fallback.url);
-              }
-            },
-          }}
-        />
-      </Pane>
+      <MapPaneSetup />
+      <TileLayer
+        key={baseTileUrl}
+        pane={MAP_PANES.satellite}
+        url={baseTileUrl}
+        subdomains={
+          isFallback
+            ? [...TILE_LAYERS.fallback.subdomains]
+            : [...TILE_LAYERS.satellite.subdomains]
+        }
+        attribution={
+          isFallback ? TILE_LAYERS.fallback.attribution : TILE_LAYERS.satellite.attribution
+        }
+        eventHandlers={{
+          tileerror: () => {
+            if (!isFallback) {
+              setIsFallback(true);
+              setBaseTileUrl(TILE_LAYERS.fallback.url);
+            }
+          },
+        }}
+      />
 
-      <Pane name={MAP_PANES.labels} style={{ zIndex: MAP_PANE_Z_INDEX.labels }}>
-        <TileLayer
-          url={TILE_LAYERS.labels.url}
-          subdomains={[...TILE_LAYERS.labels.subdomains]}
-          attribution={TILE_LAYERS.labels.attribution}
-          opacity={0.9}
-        />
-      </Pane>
+      <TileLayer
+        pane={MAP_PANES.labels}
+        url={TILE_LAYERS.labels.url}
+        subdomains={[...TILE_LAYERS.labels.subdomains]}
+        attribution={TILE_LAYERS.labels.attribution}
+        opacity={0.9}
+      />
 
       {showHeatmap ? (
-        <Pane name={MAP_PANES.heatmap} style={{ zIndex: MAP_PANE_Z_INDEX.heatmap }}>
-          {snapshot.occurrences.map((occurrence) => (
-            <CircleMarker
-              center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
-              radius={Math.min(40, 18 + occurrence.detectionCount)}
-              pathOptions={{
-                color: "#f29f4b",
-                fillColor: "#f29f4b",
-                fillOpacity: 0.08,
-                opacity: 0.04,
-                weight: 10,
-              }}
-              key={`heat-${occurrence.id}`}
-            />
-          ))}
-        </Pane>
+        snapshot.occurrences.map((occurrence) => (
+          <CircleMarker
+            pane={MAP_PANES.heatmap}
+            center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
+            radius={Math.min(40, 18 + occurrence.detectionCount)}
+            pathOptions={{
+              color: "#f29f4b",
+              fillColor: "#f29f4b",
+              fillOpacity: 0.08,
+              opacity: 0.04,
+              weight: 10,
+            }}
+            key={`heat-${occurrence.id}`}
+          />
+        ))
       ) : null}
 
       {showRiskGrid ? (
-        <Pane name={MAP_PANES.riskGrid} style={{ zIndex: MAP_PANE_Z_INDEX.riskGrid }}>
-          {snapshot.grids.map((grid) => (
-            <Rectangle
-              bounds={[
-                [grid.bounds.south, grid.bounds.west],
-                [grid.bounds.north, grid.bounds.east],
-              ]}
-              pathOptions={{
-                color: riskColor(grid.riskLevel),
-                fillColor: riskColor(grid.riskLevel),
-                fillOpacity: grid.needsAlert ? 0.12 : 0.06,
-                weight: grid.needsAlert ? 1.5 : 1,
-                dashArray: grid.needsAlert ? "5 4" : undefined,
-              }}
-              key={grid.id}
-            />
-          ))}
-        </Pane>
+        snapshot.grids.map((grid) => (
+          <Rectangle
+            pane={MAP_PANES.riskGrid}
+            bounds={[
+              [grid.bounds.south, grid.bounds.west],
+              [grid.bounds.north, grid.bounds.east],
+            ]}
+            pathOptions={{
+              color: riskColor(grid.riskLevel),
+              fillColor: riskColor(grid.riskLevel),
+              fillOpacity: grid.needsAlert ? 0.12 : 0.06,
+              weight: grid.needsAlert ? 1.5 : 1,
+              dashArray: grid.needsAlert ? "5 4" : undefined,
+            }}
+            key={grid.id}
+          />
+        ))
       ) : null}
 
-      <Pane name={MAP_PANES.riskPoint} style={{ zIndex: MAP_PANE_Z_INDEX.riskPoint }}>
-        {snapshot.occurrences.map((occurrence) => (
-          <CircleMarker
-            center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
-            radius={clampRiskRadius(occurrence.detectionCount)}
-            pathOptions={{
-              color: "rgba(8, 8, 8, 0.85)",
-              fillColor: riskColor(occurrence.riskLevel),
-              fillOpacity: 0.92,
-              weight: 2,
-            }}
-            key={occurrence.id}
-          />
-        ))}
-      </Pane>
+      {snapshot.occurrences.map((occurrence) => (
+        <CircleMarker
+          pane={MAP_PANES.riskPoint}
+          center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
+          radius={clampRiskRadius(occurrence.detectionCount)}
+          pathOptions={{
+            color: "rgba(8, 8, 8, 0.85)",
+            fillColor: riskColor(occurrence.riskLevel),
+            fillOpacity: 0.92,
+            weight: 2,
+          }}
+          key={occurrence.id}
+        />
+      ))}
 
-      <Pane name={MAP_PANES.device} style={{ zIndex: MAP_PANE_Z_INDEX.device }}>
-        {validDevices.map((device) => (
-          <CircleMarker
-            center={[device.coordinate!.latitude, device.coordinate!.longitude]}
-            radius={7}
-            pathOptions={{
-              color: "#f6f2e9",
-              fillColor: device.status === "online" ? "#2e9bff" : "#767d8a",
-              fillOpacity: 1,
-              weight: 3,
-            }}
-            key={device.id}
-          />
-        ))}
-      </Pane>
+      {validDevices.map((device) => (
+        <CircleMarker
+          pane={MAP_PANES.device}
+          center={[device.coordinate!.latitude, device.coordinate!.longitude]}
+          radius={7}
+          pathOptions={{
+            color: "#f6f2e9",
+            fillColor: device.status === "online" ? "#2e9bff" : "#767d8a",
+            fillOpacity: 1,
+            weight: 3,
+          }}
+          key={device.id}
+        />
+      ))}
     </MapContainer>
   );
 }
