@@ -3,11 +3,13 @@
   z-index: 0;
   inset: 0 0 0 var(--dashboard-rail-width, 352px);
   overflow: hidden;
+  isolation: isolate;
   background: #d1d4d2;
 }
 
 .mapRoot {
   position: absolute;
+  z-index: 0;
   inset: 0;
   width: 100%;
   height: 100%;
