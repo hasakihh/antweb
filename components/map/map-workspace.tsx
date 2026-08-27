@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, type FormEvent, type MouseEvent } from "react";
 import {
   AlertTriangle,
   ChevronLeft,
@@ -9,12 +9,17 @@ import {
   Layers3,
   List,
   MapPinned,
+  Pencil,
   RefreshCw,
   ShieldAlert,
   Thermometer,
 } from "lucide-react";
 import type { MapSnapshot } from "@/lib/map/types";
-import { formatMapTime } from "@/lib/map/map-utils";
+import {
+  formatMapTime,
+  isValidCoordinate,
+  validateCoordinateInput,
+} from "@/lib/map/map-utils";
 import styles from "./map-workspace.module.css";
 
 const MapCanvas = dynamic(() => import("./map-canvas"), {
@@ -27,11 +32,76 @@ interface MapWorkspaceProps {
 }
 
 export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
-  const [snapshot] = useState(initialSnapshot);
+  const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(true);
   const [showRiskGrid, setShowRiskGrid] = useState(true);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [editingDeviceId, setEditingDeviceId] = useState<string | null>(null);
+  const [draftLatitude, setDraftLatitude] = useState("");
+  const [draftLongitude, setDraftLongitude] = useState("");
+  const [coordinateErrors, setCoordinateErrors] = useState<{
+    latitude?: string;
+    longitude?: string;
+  }>({});
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  function selectDevice(deviceId: string) {
+    const device = snapshot.devices.find((item) => item.id === deviceId);
+    if (!device || !isValidCoordinate(device.coordinate)) {
+      setSelectedDeviceId(null);
+      setStatusMessage("该设备暂无有效坐标，暂时无法定位");
+      return;
+    }
+
+    setStatusMessage(null);
+    setRightOpen(true);
+    setSelectedDeviceId(deviceId);
+  }
+
+  function startEditing(event: MouseEvent<HTMLButtonElement>, deviceId: string) {
+    event.stopPropagation();
+    const device = snapshot.devices.find((item) => item.id === deviceId);
+    if (!device) return;
+
+    setRightOpen(true);
+    setEditingDeviceId(deviceId);
+    setCoordinateErrors({});
+    setStatusMessage(null);
+    setDraftLatitude(device.coordinate ? String(device.coordinate.latitude) : "");
+    setDraftLongitude(device.coordinate ? String(device.coordinate.longitude) : "");
+  }
+
+  function saveCoordinate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editingDeviceId) return;
+
+    const result = validateCoordinateInput(draftLatitude, draftLongitude);
+    setCoordinateErrors(result.errors);
+    if (!result.isValid) return;
+
+    setSnapshot((current) => ({
+      ...current,
+      devices: current.devices.map((device) =>
+        device.id === editingDeviceId
+          ? {
+              ...device,
+              coordinate: {
+                latitude: result.latitude,
+                longitude: result.longitude,
+                source: "manual" as const,
+                locatedAt: new Date().toISOString(),
+              },
+            }
+          : device,
+      ),
+    }));
+    setSelectedDeviceId(editingDeviceId);
+    setEditingDeviceId(null);
+    setCoordinateErrors({});
+    setStatusMessage("坐标已更新，来源已切换为手动");
+  }
 
   return (
     <section className={styles.workspace} aria-label="地图监测工作区">
@@ -39,6 +109,8 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
         snapshot={snapshot}
         showHeatmap={showHeatmap}
         showRiskGrid={showRiskGrid}
+        selectedDeviceId={selectedDeviceId}
+        onDeviceSelect={selectDevice}
       />
 
       <header className={styles.controlBar}>
@@ -151,17 +223,63 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
           </div>
           <div className={styles.deviceList}>
             {snapshot.devices.map((device) => (
-              <article className={styles.deviceRow} key={device.id}>
-                <span className={`${styles.statusDot} ${device.status === "online" ? styles.statusOnline : styles.statusOffline}`} />
-                <div>
-                  <strong>{device.name}</strong>
-                  <span>ID：{device.id}</span>
-                </div>
-                <em>{device.coordinate?.source === "gps" ? "GPS" : device.coordinate ? "手动" : "待补"}</em>
-              </article>
+              <div className={styles.deviceItem} key={device.id}>
+                <article className={`${styles.deviceRow} ${device.id === selectedDeviceId ? styles.deviceSelected : ""}`}>
+                  <button
+                    type="button"
+                    className={styles.deviceSelectButton}
+                    onClick={() => selectDevice(device.id)}
+                    aria-label={`定位到${device.name}`}
+                  >
+                    <span className={`${styles.statusDot} ${device.status === "online" ? styles.statusOnline : styles.statusOffline}`} />
+                    <span className={styles.deviceCopy}>
+                      <strong>{device.name}</strong>
+                      <span>ID：{device.id}</span>
+                    </span>
+                    <em>{device.coordinate?.source === "gps" ? "GPS" : device.coordinate ? "手动" : "待补"}</em>
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.editButton}
+                    onClick={(event) => startEditing(event, device.id)}
+                    aria-label={`编辑${device.name}经纬度`}
+                  >
+                    <Pencil size={14} strokeWidth={1.8} />
+                  </button>
+                </article>
+                {editingDeviceId === device.id ? (
+                  <form className={styles.coordinateForm} onSubmit={saveCoordinate}>
+                    <label>
+                      <span>纬度</span>
+                      <input
+                        inputMode="decimal"
+                        value={draftLatitude}
+                        onChange={(event) => setDraftLatitude(event.target.value)}
+                        aria-invalid={Boolean(coordinateErrors.latitude)}
+                      />
+                      {coordinateErrors.latitude ? <small>{coordinateErrors.latitude}</small> : null}
+                    </label>
+                    <label>
+                      <span>经度</span>
+                      <input
+                        inputMode="decimal"
+                        value={draftLongitude}
+                        onChange={(event) => setDraftLongitude(event.target.value)}
+                        aria-invalid={Boolean(coordinateErrors.longitude)}
+                      />
+                      {coordinateErrors.longitude ? <small>{coordinateErrors.longitude}</small> : null}
+                    </label>
+                    <div className={styles.formActions}>
+                      <button type="submit">保存坐标</button>
+                      <button type="button" onClick={() => setEditingDeviceId(null)}>取消</button>
+                    </div>
+                  </form>
+                ) : null}
+              </div>
             ))}
           </div>
-          <p className={styles.panelHint}>设备定位与坐标编辑将在下一阶段启用</p>
+          {statusMessage ? <p className={styles.panelStatus} role="status">{statusMessage}</p> : null}
+          <p className={styles.panelHint}>点击设备定位；铅笔按钮可编辑经纬度</p>
         </div>
       </aside>
 

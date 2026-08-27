@@ -1,23 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CircleMarker,
   MapContainer,
+  Popup,
   Rectangle,
   TileLayer,
   useMap,
 } from "react-leaflet";
+import type { CircleMarker as LeafletCircleMarker } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MAP_PANES, MAP_PANE_Z_INDEX, TILE_LAYERS } from "@/lib/map/map-config";
-import { clampRiskRadius, isValidCoordinate, riskColor } from "@/lib/map/map-utils";
-import type { MapSnapshot } from "@/lib/map/types";
+import { clampRiskRadius, formatCoordinate, formatMapTime, isValidCoordinate, riskColor } from "@/lib/map/map-utils";
+import type { DeviceLocation, MapSnapshot } from "@/lib/map/types";
+import { DeviceTrendChart } from "@/components/map/device-trend-chart";
 import styles from "./map-workspace.module.css";
 
 interface MapCanvasProps {
   snapshot: MapSnapshot;
   showHeatmap: boolean;
   showRiskGrid: boolean;
+  selectedDeviceId: string | null;
+  onDeviceSelect: (deviceId: string) => void;
 }
 
 function MapSizeSync() {
@@ -60,17 +65,79 @@ function MapPaneSetup() {
   return null;
 }
 
+function DeviceMarker({
+  device,
+  isSelected,
+  onSelect,
+}: {
+  device: DeviceLocation;
+  isSelected: boolean;
+  onSelect: (deviceId: string) => void;
+}) {
+  const map = useMap();
+  const markerRef = useRef<LeafletCircleMarker | null>(null);
+  const coordinate = device.coordinate;
+
+  useEffect(() => {
+    if (!isSelected || !coordinate || !isValidCoordinate(coordinate)) return;
+
+    map.flyTo([coordinate.latitude, coordinate.longitude], 16, {
+      duration: 0.75,
+    });
+    const popupTimer = window.setTimeout(() => markerRef.current?.openPopup(), 120);
+    return () => window.clearTimeout(popupTimer);
+  }, [coordinate, isSelected, map]);
+
+  if (!coordinate || !isValidCoordinate(coordinate)) return null;
+
+  return (
+    <CircleMarker
+      ref={markerRef}
+      pane={MAP_PANES.device}
+      center={[coordinate.latitude, coordinate.longitude]}
+      radius={isSelected ? 9 : 7}
+      pathOptions={{
+        color: "#f6f2e9",
+        fillColor: device.status === "online" ? "#2e9bff" : "#767d8a",
+        fillOpacity: 1,
+        weight: isSelected ? 4 : 3,
+      }}
+      eventHandlers={{ click: () => onSelect(device.id) }}
+    >
+      <Popup className={styles.devicePopup} closeButton>
+        <div className={styles.popupContent}>
+          <div className={styles.popupHeading}>
+            <div>
+              <span>DEVICE DETAIL</span>
+              <strong>{device.name}</strong>
+            </div>
+            <i className={device.status === "online" ? styles.popupOnline : styles.popupOffline} />
+          </div>
+          <dl className={styles.popupMeta}>
+            <div><dt>设备 ID</dt><dd>{device.id}</dd></div>
+            <div><dt>地图坐标</dt><dd>{formatCoordinate(coordinate.latitude)}, {formatCoordinate(coordinate.longitude)}</dd></div>
+            <div><dt>坐标来源</dt><dd>{coordinate.source === "gps" ? "GPS" : "手动"}</dd></div>
+            <div><dt>定位时间</dt><dd>{formatMapTime(coordinate.locatedAt)}</dd></div>
+          </dl>
+          <div className={styles.popupTrend}>
+            <span>数量趋势</span>
+            <DeviceTrendChart points={device.trend} />
+          </div>
+        </div>
+      </Popup>
+    </CircleMarker>
+  );
+}
+
 export default function MapCanvas({
   snapshot,
   showHeatmap,
   showRiskGrid,
+  selectedDeviceId,
+  onDeviceSelect,
 }: MapCanvasProps) {
   const [baseTileUrl, setBaseTileUrl] = useState<string>(TILE_LAYERS.satellite.url);
   const [isFallback, setIsFallback] = useState(false);
-  const validDevices = snapshot.devices.filter((device) =>
-    isValidCoordinate(device.coordinate),
-  );
-
   return (
     <MapContainer
       className={styles.mapRoot}
@@ -168,17 +235,11 @@ export default function MapCanvas({
         />
       ))}
 
-      {validDevices.map((device) => (
-        <CircleMarker
-          pane={MAP_PANES.device}
-          center={[device.coordinate!.latitude, device.coordinate!.longitude]}
-          radius={7}
-          pathOptions={{
-            color: "#f6f2e9",
-            fillColor: device.status === "online" ? "#2e9bff" : "#767d8a",
-            fillOpacity: 1,
-            weight: 3,
-          }}
+      {snapshot.devices.map((device) => (
+        <DeviceMarker
+          device={device}
+          isSelected={device.id === selectedDeviceId}
+          onSelect={onDeviceSelect}
           key={device.id}
         />
       ))}
