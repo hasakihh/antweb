@@ -9,11 +9,11 @@ import {
   TileLayer,
   useMap,
 } from "react-leaflet";
-import type { CircleMarker as LeafletCircleMarker } from "leaflet";
+import type { CircleMarker as LeafletCircleMarker, Rectangle as LeafletRectangle } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MAP_PANES, MAP_PANE_Z_INDEX, TILE_LAYERS } from "@/lib/map/map-config";
 import { clampRiskRadius, formatCoordinate, formatMapTime, isValidCoordinate, riskColor } from "@/lib/map/map-utils";
-import type { DeviceLocation, MapSnapshot } from "@/lib/map/types";
+import type { DeviceLocation, MapSnapshot, RiskGrid, RiskOccurrence } from "@/lib/map/types";
 import { DeviceTrendChart } from "@/components/map/device-trend-chart";
 import styles from "./map-workspace.module.css";
 
@@ -23,6 +23,9 @@ interface MapCanvasProps {
   showRiskGrid: boolean;
   selectedDeviceId: string | null;
   onDeviceSelect: (deviceId: string) => void;
+  selectedRiskGridId: string | null;
+  highlightedRiskGridId: string | null;
+  onRiskGridSelect: (gridId: string) => void;
 }
 
 function MapSizeSync() {
@@ -129,12 +132,112 @@ function DeviceMarker({
   );
 }
 
+function RiskOccurrenceMarker({ occurrence }: { occurrence: RiskOccurrence }) {
+  return (
+    <CircleMarker
+      pane={MAP_PANES.riskPoint}
+      center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
+      radius={clampRiskRadius(occurrence.detectionCount)}
+      pathOptions={{
+        color: "rgba(8, 8, 8, 0.85)",
+        fillColor: riskColor(occurrence.riskLevel),
+        fillOpacity: 0.92,
+        weight: 2,
+      }}
+    >
+      <Popup>
+        <div className={styles.popupContent}>
+          <div className={styles.popupHeading}>
+            <div>
+              <span>RISK OCCURRENCE</span>
+              <strong>风险发生点</strong>
+            </div>
+            <i className={styles.riskPopupDot} style={{ background: riskColor(occurrence.riskLevel) }} />
+          </div>
+          <dl className={styles.popupMeta}>
+            <div><dt>来源</dt><dd>{occurrence.source}</dd></div>
+            <div><dt>检测数量</dt><dd>{occurrence.detectionCount} 次</dd></div>
+            <div><dt>风险等级</dt><dd>{occurrence.riskLevel}</dd></div>
+            <div><dt>检测时间</dt><dd>{formatMapTime(occurrence.detectedAt)}</dd></div>
+          </dl>
+        </div>
+      </Popup>
+    </CircleMarker>
+  );
+}
+
+function RiskGridShape({
+  grid,
+  isSelected,
+  isHighlighted,
+  onSelect,
+}: {
+  grid: RiskGrid;
+  isSelected: boolean;
+  isHighlighted: boolean;
+  onSelect: (gridId: string) => void;
+}) {
+  const map = useMap();
+  const rectangleRef = useRef<LeafletRectangle | null>(null);
+
+  useEffect(() => {
+    if (!isSelected) return;
+
+    map.flyTo([grid.center.latitude, grid.center.longitude], Math.max(map.getZoom(), 15), {
+      duration: 0.8,
+    });
+    const popupTimer = window.setTimeout(() => rectangleRef.current?.openPopup(), 140);
+    return () => window.clearTimeout(popupTimer);
+  }, [grid.center.latitude, grid.center.longitude, isSelected, map]);
+
+  return (
+    <Rectangle
+      ref={rectangleRef}
+      pane={MAP_PANES.riskGrid}
+      bounds={[
+        [grid.bounds.south, grid.bounds.west],
+        [grid.bounds.north, grid.bounds.east],
+      ]}
+      pathOptions={{
+        color: riskColor(grid.riskLevel),
+        fillColor: riskColor(grid.riskLevel),
+        fillOpacity: isHighlighted ? 0.26 : grid.needsAlert ? 0.12 : 0.06,
+        weight: isHighlighted ? 4 : grid.needsAlert ? 1.5 : 1,
+        dashArray: isHighlighted ? undefined : grid.needsAlert ? "5 4" : undefined,
+      }}
+      eventHandlers={{ click: () => onSelect(grid.id) }}
+    >
+      <Popup>
+        <div className={styles.popupContent}>
+          <div className={styles.popupHeading}>
+            <div>
+              <span>RISK GRID</span>
+              <strong>栅格 {grid.id}</strong>
+            </div>
+            <i className={styles.riskPopupDot} style={{ background: riskColor(grid.riskLevel) }} />
+          </div>
+          <dl className={styles.popupMeta}>
+            <div><dt>检测次数</dt><dd>{grid.detectionCount} 次</dd></div>
+            <div><dt>阳性次数</dt><dd>{grid.positiveCount} 次</dd></div>
+            <div><dt>风险分数</dt><dd>{grid.riskScore.toFixed(2)}</dd></div>
+            <div><dt>风险趋势</dt><dd>{grid.trend === "rising" ? "上升" : grid.trend === "falling" ? "下降" : "稳定"}</dd></div>
+            <div><dt>最近检测</dt><dd>{formatMapTime(grid.latestDetectedAt)}</dd></div>
+          </dl>
+        </div>
+      </Popup>
+    </Rectangle>
+  );
+}
+
 export default function MapCanvas({
   snapshot,
   showHeatmap,
   showRiskGrid,
   selectedDeviceId,
   onDeviceSelect,
+  selectedRiskGridId,
+  highlightedRiskGridId,
+  onRiskGridSelect,
 }: MapCanvasProps) {
   const [baseTileUrl, setBaseTileUrl] = useState<string>(TILE_LAYERS.satellite.url);
   const [isFallback, setIsFallback] = useState(false);
@@ -202,37 +305,18 @@ export default function MapCanvas({
 
       {showRiskGrid ? (
         snapshot.grids.map((grid) => (
-          <Rectangle
-            pane={MAP_PANES.riskGrid}
-            bounds={[
-              [grid.bounds.south, grid.bounds.west],
-              [grid.bounds.north, grid.bounds.east],
-            ]}
-            pathOptions={{
-              color: riskColor(grid.riskLevel),
-              fillColor: riskColor(grid.riskLevel),
-              fillOpacity: grid.needsAlert ? 0.12 : 0.06,
-              weight: grid.needsAlert ? 1.5 : 1,
-              dashArray: grid.needsAlert ? "5 4" : undefined,
-            }}
+          <RiskGridShape
+            grid={grid}
+            isSelected={grid.id === selectedRiskGridId}
+            isHighlighted={grid.id === highlightedRiskGridId}
+            onSelect={onRiskGridSelect}
             key={grid.id}
           />
         ))
       ) : null}
 
       {snapshot.occurrences.map((occurrence) => (
-        <CircleMarker
-          pane={MAP_PANES.riskPoint}
-          center={[occurrence.coordinate.latitude, occurrence.coordinate.longitude]}
-          radius={clampRiskRadius(occurrence.detectionCount)}
-          pathOptions={{
-            color: "rgba(8, 8, 8, 0.85)",
-            fillColor: riskColor(occurrence.riskLevel),
-            fillOpacity: 0.92,
-            weight: 2,
-          }}
-          key={occurrence.id}
-        />
+        <RiskOccurrenceMarker occurrence={occurrence} key={occurrence.id} />
       ))}
 
       {snapshot.devices.map((device) => (

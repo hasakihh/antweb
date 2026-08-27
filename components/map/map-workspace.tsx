@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, type FormEvent, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import {
   AlertTriangle,
   ChevronLeft,
@@ -46,6 +46,18 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
     longitude?: string;
   }>({});
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [selectedRiskGridId, setSelectedRiskGridId] = useState<string | null>(null);
+  const [highlightedRiskGridId, setHighlightedRiskGridId] = useState<string | null>(null);
+  const riskFocusTimerRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (riskFocusTimerRef.current !== null) {
+        window.clearTimeout(riskFocusTimerRef.current);
+      }
+    },
+    [],
+  );
 
   function selectDevice(deviceId: string) {
     const device = snapshot.devices.find((item) => item.id === deviceId);
@@ -103,6 +115,20 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
     setStatusMessage("坐标已更新，来源已切换为手动");
   }
 
+  function focusRiskGrid(gridId: string) {
+    if (riskFocusTimerRef.current !== null) {
+      window.clearTimeout(riskFocusTimerRef.current);
+    }
+
+    setShowRiskGrid(true);
+    setSelectedRiskGridId(gridId);
+    setHighlightedRiskGridId(gridId);
+    riskFocusTimerRef.current = window.setTimeout(() => {
+      setHighlightedRiskGridId(null);
+      riskFocusTimerRef.current = null;
+    }, 3500);
+  }
+
   return (
     <section className={styles.workspace} aria-label="地图监测工作区">
       <MapCanvas
@@ -111,6 +137,9 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
         showRiskGrid={showRiskGrid}
         selectedDeviceId={selectedDeviceId}
         onDeviceSelect={selectDevice}
+        selectedRiskGridId={selectedRiskGridId}
+        highlightedRiskGridId={highlightedRiskGridId}
+        onRiskGridSelect={focusRiskGrid}
       />
 
       <header className={styles.controlBar}>
@@ -192,11 +221,11 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
           </div>
           <div className={styles.alertList}>
             {snapshot.alerts.map((alert) => (
-              <article className={styles.alertCard} key={alert.id}>
+              <button className={styles.alertCard} type="button" onClick={() => focusRiskGrid(alert.gridId)} key={alert.id}>
                 <strong>{alert.title}</strong>
                 <span>风险分数 {alert.riskScore.toFixed(2)} · 阳性 {alert.positiveCount} 次</span>
                 <small>栅格：{alert.gridId}　·　点击定位排查</small>
-              </article>
+              </button>
             ))}
           </div>
         </div>

@@ -318,12 +318,26 @@
 
 .alertCard {
   display: grid;
+  width: 100%;
   gap: 6px;
   padding: 12px 11px;
   background: color-mix(in srgb, var(--card) 78%, var(--destructive) 4%);
+  border-top: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
   border-left: 3px solid #e55355;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(35, 45, 44, 0.05);
+  text-align: left;
+  cursor: pointer;
+}
+
+.alertCard:hover,
+.alertCard:focus-visible {
+  border-top-color: color-mix(in srgb, var(--destructive) 34%, transparent);
+  border-right-color: color-mix(in srgb, var(--destructive) 34%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--destructive) 34%, transparent);
+  background: color-mix(in srgb, var(--card) 72%, var(--destructive) 10%);
 }
 
 .alertCard strong { color: #ef8585; font-size: 11px; line-height: 1.45; }
@@ -412,6 +426,7 @@
 .popupHeading span { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 7px; }
 .popupHeading strong { color: var(--foreground); font-size: 13px; font-weight: 600; }
 .popupHeading i { width: 7px; height: 7px; margin-top: 6px; border-radius: 50%; }
+.riskPopupDot { flex: 0 0 7px; }
 .popupOnline { background: #2e9bff; }
 .popupOffline { background: #e25352; }
 .popupMeta { display: grid; gap: 6px; padding: 10px 0; margin: 0; }
