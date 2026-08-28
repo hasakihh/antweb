@@ -13,7 +13,7 @@ import {
 import { divIcon } from "leaflet";
 import type { Marker as LeafletMarker, Rectangle as LeafletRectangle } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MAP_PANES, MAP_PANE_Z_INDEX, TILE_LAYERS } from "@/lib/map/map-config";
+import { MAP_MAX_ZOOM, MAP_PANES, MAP_PANE_Z_INDEX, TILE_LAYERS } from "@/lib/map/map-config";
 import { clampRiskRadius, formatCoordinate, formatMapTime, isValidCoordinate, riskColor } from "@/lib/map/map-utils";
 import type { DeviceLocation, MapSnapshot, RiskGrid, RiskOccurrence } from "@/lib/map/types";
 import { DeviceTrendChart } from "@/components/map/device-trend-chart";
@@ -278,7 +278,7 @@ export default function MapCanvas({
       center={[snapshot.center.latitude, snapshot.center.longitude]}
       zoom={12}
       minZoom={5}
-      maxZoom={19}
+      maxZoom={MAP_MAX_ZOOM}
       scrollWheelZoom
       zoomControl
       attributionControl
@@ -298,6 +298,7 @@ export default function MapCanvas({
         attribution={
           isFallback ? TILE_LAYERS.fallback.attribution : TILE_LAYERS.satellite.attribution
         }
+        maxNativeZoom={MAP_MAX_ZOOM}
         eventHandlers={{
           tileerror: () => {
             if (!isFallback) {
@@ -313,6 +314,7 @@ export default function MapCanvas({
         url={TILE_LAYERS.labels.url}
         subdomains={[...TILE_LAYERS.labels.subdomains]}
         attribution={TILE_LAYERS.labels.attribution}
+        maxNativeZoom={MAP_MAX_ZOOM}
         opacity={0.9}
       />
 

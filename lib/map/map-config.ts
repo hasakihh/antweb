@@ -16,6 +16,9 @@ export const MAP_PANE_Z_INDEX = {
   device: 600,
 } as const;
 
+// The public Gaode satellite tiles reliably cover zoom levels 5–18.
+export const MAP_MAX_ZOOM = 18;
+
 export const TILE_LAYERS = {
   satellite: {
     label: "高德卫星",
