@@ -9,22 +9,23 @@ export function DeviceTrendChart({ points }: { points: readonly DeviceTrendPoint
   }
 
   const max = Math.max(...points.map((point) => point.count), 1);
+  const chartTop = 6;
+  const chartBottom = 43;
+  const toY = (count: number) => chartBottom - (count / max) * (chartBottom - chartTop);
   const coordinates = points
     .map((point, index) => {
       const x = points.length === 1 ? 50 : (index / (points.length - 1)) * 100;
-      const y = 30 - (point.count / max) * 24;
-      return `${x},${y}`;
+      return `${x},${toY(point.count)}`;
     })
     .join(" ");
 
   return (
     <div className={styles.trendChart} aria-label="设备数量趋势图">
-      <svg viewBox="0 0 100 32" role="img" aria-hidden="true" preserveAspectRatio="none">
+      <svg viewBox="0 0 100 48" role="img" aria-hidden="true" preserveAspectRatio="none">
         <polyline points={coordinates} fill="none" stroke="currentColor" strokeWidth="1.8" vectorEffect="non-scaling-stroke" />
         {points.map((point, index) => {
           const x = points.length === 1 ? 50 : (index / (points.length - 1)) * 100;
-          const y = 30 - (point.count / max) * 24;
-          return <circle cx={x} cy={y} r="1.7" fill="currentColor" key={`${point.label}-${index}`} />;
+          return <circle cx={x} cy={toY(point.count)} r="2" fill="currentColor" key={`${point.label}-${index}`} />;
         })}
       </svg>
       <div className={styles.trendLabels}>
