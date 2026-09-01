@@ -148,8 +148,8 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
             <MapPinned size={17} strokeWidth={1.8} />
           </span>
           <div>
-            <strong>监测点位置分布</strong>
-            <span>设备位置、发生点与风险网格</span>
+            <strong>监测地图</strong>
+            
           </div>
         </div>
 
@@ -218,14 +218,14 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
           </div>
           <div className={styles.alertHeader}>
             <AlertTriangle size={15} strokeWidth={1.8} />
-            <strong>重点复查和预警</strong>
+            <strong>重点复查点</strong>
           </div>
           <div className={styles.alertList}>
             {snapshot.alerts.map((alert) => (
               <button className={styles.alertCard} type="button" onClick={() => focusRiskGrid(alert.gridId)} key={alert.id}>
                 <strong>{alert.title}</strong>
                 <span>风险分数 {alert.riskScore.toFixed(2)} · 阳性 {alert.positiveCount} 次</span>
-                <small>栅格：{alert.gridId}　·　点击定位排查</small>
+                <small>栅格：{alert.gridId}</small>
               </button>
             ))}
           </div>
@@ -309,7 +309,7 @@ export function MapWorkspace({ initialSnapshot }: MapWorkspaceProps) {
             ))}
           </div>
           {statusMessage ? <p className={styles.panelStatus} role="status">{statusMessage}</p> : null}
-          <p className={styles.panelHint}>点击设备定位；铅笔按钮可编辑经纬度</p>
+          
         </div>
       </aside>
 

@@ -31,8 +31,9 @@
 }
 
 .mapRoot :global(.leaflet-top.leaflet-left) {
-  top: 94px;
+  top: auto;
   left: 14px;
+  bottom: 20px;
 }
 
 .mapRoot :global(.leaflet-control-zoom a) {
@@ -73,10 +74,10 @@
   right: 18px;
   left: 18px;
   display: flex;
-  min-height: 58px;
+  min-height: 40px;
   align-items: center;
   gap: 24px;
-  padding: 0 15px;
+  padding: 0px 15px;
   color: var(--foreground);
   background: color-mix(in srgb, var(--card) 88%, transparent);
   border: 1px solid var(--line);
@@ -105,8 +106,8 @@
 
 .brandIcon {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   place-items: center;
   color: var(--chart-2);
   background: color-mix(in srgb, var(--chart-2) 16%, transparent);
@@ -161,7 +162,7 @@
 .layerControls button,
 .iconButton {
   display: inline-flex;
-  min-height: 36px;
+  min-height: 28px;
   align-items: center;
   gap: 6px;
   padding: 0 12px;
@@ -222,13 +223,13 @@
 }
 
 .leftDrawer {
-  left: 18px;
-  transform: translateX(calc(-100% + 38px));
+  left: 6px;
+  transform: translateX(calc(-100% + 8px));
 }
 
 .rightDrawer {
-  right: 18px;
-  transform: translateX(calc(100% - 38px));
+  right: 0px;
+  transform: translateX(calc(100%));
 }
 
 .drawerOpen {
@@ -246,10 +247,10 @@
   z-index: 2;
   top: 16px;
   display: inline-flex;
-  min-height: 42px;
+  min-height: 35px;
   align-items: center;
   gap: 8px;
-  padding: 0 12px;
+  padding: 0 10px;
   color: var(--paper-soft);
   background: color-mix(in srgb, var(--card) 92%, transparent);
   border: 1px solid var(--line);
@@ -404,7 +405,7 @@
   position: absolute;
   z-index: 10;
   right: 22px;
-  bottom: 20px;
+  bottom: 640px;
   display: inline-flex;
   gap: 12px;
   padding: 7px 10px;

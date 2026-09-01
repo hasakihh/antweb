@@ -1445,3 +1445,15 @@ input:focus-visible {
   background: transparent;
   border-color: rgba(46, 46, 46, 0.48);
 }
+
+/* Keep Latin glyphs and numerals consistent across every route. Times New
+   Roman is listed first; Chinese glyphs fall back to the existing UI fonts. */
+:root {
+  --font-interface: "Times New Roman", "Microsoft YaHei UI", "Microsoft YaHei",
+    "PingFang SC", sans-serif;
+}
+
+body,
+body :where(*) {
+  font-family: var(--font-interface) !important;
+}

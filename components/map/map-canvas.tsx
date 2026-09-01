@@ -154,9 +154,8 @@ function DeviceMarker({
             <i className={device.status === "online" ? styles.popupOnline : styles.popupOffline} />
           </div>
           <dl className={styles.popupMeta}>
-            <div><dt>设备 ID</dt><dd>{device.id}</dd></div>
+            
             <div><dt>地图坐标</dt><dd>{formatCoordinate(coordinate.latitude)}, {formatCoordinate(coordinate.longitude)}</dd></div>
-            <div><dt>坐标来源</dt><dd>{coordinate.source === "gps" ? "GPS" : "手动"}</dd></div>
             <div><dt>定位时间</dt><dd>{formatMapTime(coordinate.locatedAt)}</dd></div>
           </dl>
           <div className={styles.popupTrend}>
